@@ -5332,26 +5332,26 @@ function createStage(E) {
     // front: smooth tunic with only the big forms — diagonal mantle, one long hanging fold, V neck, a few soft creases (each with an engraved groove)
     const MP0 = [-1.55, 12.4], MP1 = [1.45, 6.0], MV = [MP1[0] - MP0[0], MP1[1] - MP0[1]], ML = Math.hypot(MV[0], MV[1]);
     const MVx = MV[0] / ML, MVy = MV[1] / ML, MNx = -MVy, MNy = MVx;
-    for (let yy = 5.8; yy < 12.9; yy += 0.08) {
+    for (let yy = 5.8; yy < 12.9; yy += 0.06) {
       const a = torsoA(yy), zb = torsoB(yy) + 0.06;
-      for (let xx = -a + 0.04; xx < a - 0.02; xx += 0.08) {
+      for (let xx = -a + 0.03; xx < a - 0.01; xx += 0.06) {
         const qx = -xx - MP0[0], qy = yy - MP0[1], al = qx * MVx + qy * MVy, di = qx * MNx + qy * MNy;
         let h = 0.02, t = 0.5;
         if (al > 0 && al < ML && Math.abs(di) < 0.6) {
           const e = 1 - (di / 0.6) ** 2, tp = Math.pow(Math.sin(Math.PI * al / ML), 0.4), gr = Math.exp(-((di / 0.05) ** 2));
-          h = 0.22 * Math.pow(e, 0.8) * tp - 0.08 * gr; t = 0.3 + 0.6 * e - 0.35 * gr;
+          const fc = 0.5 + 0.5 * Math.sin(di * 36 + al * 1.5); h = 0.22 * Math.pow(e, 0.8) * tp - 0.08 * gr + 0.035 * fc * e; t = 0.3 + 0.6 * e - 0.35 * gr + 0.18 * (fc - 0.5) * e;
         } else if (al > 0.3 && al < ML - 0.6 && Math.abs(di - 1.0) < 0.32) {
           const e = 1 - ((di - 1.0) / 0.32) ** 2; h = 0.14 * e; t = 0.25 + 0.6 * e;
         }
         const hx = -xx - 0.08 * Math.sin(yy * 0.9), dx = Math.abs(hx - 1.45);
         if (dx < 0.5 && yy > 5.5 + 1.6 * dx && yy < 12.3) {
-          const e = 1 - (dx / 0.5) ** 2, gr = Math.exp(-((dx / 0.05) ** 2)), hh2 = 0.26 * e - 0.08 * gr;
-          if (hh2 > h) { h = hh2; t = 0.25 + 0.65 * e - 0.3 * gr; }
+          const e = 1 - (dx / 0.5) ** 2, gr = Math.exp(-((dx / 0.05) ** 2)), fc2 = 0.5 + 0.5 * Math.sin(dx * 34 + yy * 0.8), hh2 = 0.26 * e - 0.08 * gr + 0.035 * fc2 * e;
+          if (hh2 > h) { h = hh2; t = 0.25 + 0.65 * e - 0.3 * gr + 0.18 * (fc2 - 0.5) * e; }
         }
         for (const c of [9.0, 8.1, 7.2]) { const g = Math.exp(-(((yy - c + 0.18 * xx * xx) / 0.045) ** 2)); if (g > 0.05 && h < 0.1) { h -= 0.05 * g; t -= 0.35 * g; } }
         if (yy > 11.6 && yy < 13.0 && Math.abs(xx) < 0.12 + 0.5 * (yy - 11.6) / 1.4) { h = -0.05; t = 0.15; }
         const hh = Math.max(0.03, h + 0.05);
-        P(xx, yy, zb - 0.04 + hh / 2, 0.08, 0.08, hh, shade(cl(t, 0, 1)));
+        P(xx, yy, zb - 0.04 + hh / 2, 0.065, 0.065, hh, shade(cl(t, 0, 1)));
       }
     }
     for (let xx = -1.65; xx < 1.65; xx += 0.1) {                                // overhanging scalloped hem of the tunic
@@ -5359,10 +5359,10 @@ function createStage(E) {
       P(xx, 5.95 - hh / 2 + 0.1, torsoB(5.9) + 0.18, 0.1, hh, 0.3, shade(0.35 + 0.5 * sc));
       P(xx, 5.95 - hh + 0.1, torsoB(5.9) + 0.18, 0.1, 0.05, 0.32, CH);
     }
-    for (let yy = 5.8; yy < 12.7; yy += 0.1) for (let xx = -1.7; xx < 1.7; xx += 0.1) {  // cloak folds down the back
+    for (let yy = 5.8; yy < 12.7; yy += 0.06) for (let xx = -1.7; xx < 1.7; xx += 0.06) {  // cloak folds down the back
       if (Math.abs(xx) > torsoA(yy) - 0.02) continue;
       const f = 0.5 + 0.5 * Math.sin(xx * 7 + 0.8 * Math.sin(yy * 0.7)), hh = 0.05 + 0.09 * f;
-      P(xx, yy, -(torsoB(yy) + 0.06) - hh / 2 + 0.04, 0.1, 0.1, hh, shade(0.25 + 0.6 * f));
+      P(xx, yy, -(torsoB(yy) + 0.06) - hh / 2 + 0.04, 0.065, 0.065, hh, shade(0.25 + 0.6 * f));
     }
     P(0, 12.95, 0, 3.8, 1.0, 1.5, CM);                                          // shoulders
     for (const sd of [-1, 1]) {
@@ -5373,16 +5373,16 @@ function createStage(E) {
       P(sd * 7.7, 12.76, 0.48, 0.4, 0.1, 0.2, 0xcfd6c6);                        // thumb
       // arm: a tapered cylinder (wide at the shoulder, narrower at the wrist) wrapped in robe, built from 0.1 blocks snapped to a grid;
       // folds spiral along the arm, with a little sag underneath
-      const nf = sd < 0 ? 5 : 4, kk = sd < 0 ? 0.9 : -0.7, ph0 = sd < 0 ? 0.3 : 1.7, sagA = sd < 0 ? 0.28 : 0.16, sn1 = (v) => Math.round(v / 0.1) * 0.1;
-      for (let xp = 1.6; xp <= 6.45; xp += 0.1) {
+      const nf = sd < 0 ? 5 : 4, kk = sd < 0 ? 0.9 : -0.7, ph0 = sd < 0 ? 0.3 : 1.7, sagA = sd < 0 ? 0.28 : 0.16, sn1 = (v) => Math.round(v / 0.06) * 0.06;
+      for (let xp = 1.6; xp <= 6.45; xp += 0.06) {
         const u = (xp - 1.6) / 4.85, R = 0.72 - 0.27 * Math.pow(u, 0.8), yc = 12.95 - 0.025 * (xp - 1.6);
-        P(sd * xp, yc, 0, 0.11, 2 * R * 0.62, 2 * R * 0.62, 0xb4bcab);
-        const N = Math.ceil(2 * Math.PI * R / 0.1);
+        P(sd * xp, yc, 0, 0.07, 2 * R * 0.62, 2 * R * 0.62, 0xb4bcab);
+        const N = Math.ceil(2 * Math.PI * R / 0.06);
         for (let i = 0; i < N; i++) {
           const th = i / N * Math.PI * 2, c = Math.cos(th), sn = Math.sin(th);
-          const w = 0.5 + 0.5 * Math.cos(nf * th + kk * xp * 2 + ph0 + 0.5 * Math.sin(xp * 1.3)), g = 1 - Math.pow(1 - w, 3);
-          const sag = sn < 0 ? sagA * Math.sin(Math.PI * u) * sn * sn : 0, r = R * (0.9 + 0.16 * g + sag);
-          P(sd * xp, sn1(yc + r * sn), sn1(r * c * 0.96), 0.11, 0.11, 0.11, shade(0.08 + 0.8 * g + 0.12 * sn));
+          const w2 = 0.5 + 0.5 * Math.cos(nf * 3 * th + kk * xp * 3 + ph0), w = 0.5 + 0.5 * Math.cos(nf * th + kk * xp * 2 + ph0 + 0.5 * Math.sin(xp * 1.3)), g = 1 - Math.pow(1 - w, 3);
+          const sag = sn < 0 ? sagA * Math.sin(Math.PI * u) * sn * sn : 0, r = R * (0.9 + 0.16 * g + 0.025 * w2 + sag);
+          P(sd * xp, sn1(yc + r * sn), sn1(r * c * 0.96), 0.07, 0.07, 0.07, shade(0.08 + 0.75 * g + 0.12 * sn + 0.12 * (w2 - 0.5)));
         }
       }
     }
