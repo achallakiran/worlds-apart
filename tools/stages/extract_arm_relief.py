@@ -1,5 +1,5 @@
 # Trace the sleeves of the reference photo into per-cell tone + relief grids, and write them into world.js (between ARMDATA markers).
-# usage: python3 -I extract_arm_relief.py FULL_STATUE.jpg world.js [FACE_CLOSEUP.jpg]
+# usage: python3 -I extract_arm_relief.py FULL_STATUE.jpg world.js [FACE_CLOSEUP.jpg [SIDE_OR_REAR_HEAD.jpg]]
 import sys, numpy as np
 from PIL import Image
 from scipy import ndimage as ndi
@@ -80,7 +80,20 @@ if len(sys.argv) > 3:
     for j in range(nyf):
         tr.append(''.join('.' if not m[j, i] else chr(97 + int(np.clip((tone[j, i] - lo) / (hi - lo), 0, 0.999) * 26)) for i in range(nxf)))
         rr.append(''.join('.' if not m[j, i] else chr(97 + int(np.clip(13 + 12 * rel[j, i] / (2 * sdv), 0, 25))) for i in range(nxf)))
-    js += "const HEAD = {X0:%g,DX:%g,YT:%g,DY:%g,\n t:[%s],\n r:[%s]};\n" % (HX0, DXF, YTF, DXF, ','.join("'%s'" % x for x in tr), ','.join("'%s'" % x for x in rr))
+    zbs = ''
+    if len(sys.argv) > 4:                    # side / rear-three-quarter view: per-row head depth from the silhouette -> how far the hood extends behind the face plane
+        sim = np.asarray(Image.open(sys.argv[4]).convert('RGB')).astype(float)
+        sR, sB = sim[..., 0], sim[..., 2]
+        sm = ((sim[..., 2] < 165) | (sB - sR < 15)); sm[330:, :] = False; sm[:, 420:] = False
+        sm = ndi.binary_fill_holes(ndi.binary_opening(ndi.gaussian_filter(sm.astype(float), 1.5) > 0.5, iterations=1))
+        l3, n3 = ndi.label(sm); sm = l3 == (1 + int(np.argmax(ndi.sum(sm, l3, range(1, n3 + 1)))))
+        P0, SCS = 36.0, 100.0; zb = []
+        for j in range(nyf):
+            y = YTF - j * DXF; pyy = int(np.clip(P0 + (YTF - y) * SCS, 40, 316)); xs = np.where(sm[pyy])[0]
+            zb.append(max(0.5, 0.85 * (xs.max() - xs.min()) / SCS - 0.62))
+        k = 3; zb = [float(np.mean(zb[max(0, i - k):i + k + 1])) for i in range(len(zb))]
+        zbs = ',zb:[%s]' % ','.join('%.2f' % v for v in zb)
+    js += "const HEAD = {X0:%g,DX:%g,YT:%g,DY:%g%s,\n t:[%s],\n r:[%s]};\n" % (HX0, DXF, YTF, DXF, zbs, ','.join("'%s'" % x for x in tr), ','.join("'%s'" % x for x in rr))
     print('head rows', nyf, 'cols', nxf, 'ptop', ptop)
 js += "/*ENDARMDATA*/"
 print('body rows', len(tr), 'cols', nxb)
