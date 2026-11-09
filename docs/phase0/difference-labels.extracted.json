@@ -1,0 +1,324 @@
+{
+ "china-mountain-lake": [
+  [
+   0,
+   "Fisherman\\u2019s basket pair"
+  ],
+  [
+   1,
+   "Covered or open boat"
+  ],
+  [
+   2,
+   "Pavilion lantern"
+  ],
+  [
+   3,
+   "Lake bird"
+  ],
+  [
+   4,
+   "Open or folded village umbrella"
+  ],
+  [
+   5,
+   "Shoreline flowers"
+  ]
+ ],
+ "japan-pagoda-garden": [
+  [
+   0,
+   "Koi pair"
+  ],
+  [
+   1,
+   "Open or folded garden umbrella"
+  ],
+  [
+   2,
+   "Stone lantern"
+  ],
+  [
+   3,
+   "Pagoda branching ornament"
+  ],
+  [
+   4,
+   "Garden flowers"
+  ],
+  [
+   5,
+   "Garden companion"
+  ],
+  [
+   8,
+   "Paper lantern procession"
+  ]
+ ],
+ "india-taj-mahal-gardens": [
+  [
+   0,
+   "Visitor\\u2019s open parasol"
+  ],
+  [
+   1,
+   "A flowerbed pattern"
+  ],
+  [
+   2,
+   "Garden bench backrest"
+  ],
+  [
+   3,
+   "Single or paired garden pots"
+  ],
+  [
+   4,
+   "A poolside bird"
+  ],
+  [
+   5,
+   "A minaret\\u2019s balcony"
+  ]
+ ],
+ "egypt-nile-and-stone": [
+  [
+   0,
+   "Boat sail pattern"
+  ],
+  [
+   1,
+   "Market pottery"
+  ],
+  [
+   2,
+   "Sphinx winged headdress emblem"
+  ],
+  [
+   3,
+   "Camel saddle blanket"
+  ],
+  [
+   4,
+   "Temple lotus capital"
+  ],
+  [
+   5,
+   "Landing lantern pair"
+  ]
+ ],
+ "italy-piazza-of-wonders": [
+  [
+   0,
+   "Colosseum keystone"
+  ],
+  [
+   1,
+   "Piazza banner"
+  ],
+  [
+   2,
+   "Tower branching crest"
+  ],
+  [
+   3,
+   "Cathedral dome medallion"
+  ],
+  [
+   4,
+   "Gondola decoration"
+  ],
+  [
+   5,
+   "Bridge sculpted shield"
+  ],
+  [
+   6,
+   "Cafe parasol pennant"
+  ],
+  [
+   7,
+   "Garden planter"
+  ],
+  [
+   8,
+   "Waterfront window lights"
+  ],
+  [
+   9,
+   "Evening train carriage"
+  ],
+  [
+   9,
+   "Piazza lantern lights"
+  ]
+ ],
+ "france-paris-afterglow": [
+  [
+   0,
+   "Summit tricolour"
+  ],
+  [
+   1,
+   "Observation deck branching emblem"
+  ],
+  [
+   2,
+   "Garden tulips"
+  ],
+  [
+   3,
+   "Cafe picnic basket"
+  ],
+  [
+   4,
+   "Covered or open Seine boat"
+  ],
+  [
+   5,
+   "Bridge fleur-de-lis"
+  ],
+  [
+   6,
+   "Park bicycle basket"
+  ],
+  [
+   7,
+   "Promenade stone urn"
+  ],
+  [
+   8,
+   "Tower evening lights"
+  ],
+  [
+   9,
+   "Parisian window lights"
+  ]
+ ],
+ "korea-gyeongbokgung-palace": [
+  [
+   0,
+   "Morning guard twin standards"
+  ],
+  [
+   1,
+   "Lotus blossom"
+  ],
+  [
+   2,
+   "Courtyard stone medallion"
+  ],
+  [
+   3,
+   "Roof guardian wings"
+  ],
+  [
+   4,
+   "Afternoon hanbok parasol"
+  ],
+  [
+   5,
+   "Garden tea basket"
+  ],
+  [
+   6,
+   "Dusk bridge tassel"
+  ],
+  [
+   7,
+   "Evening lantern bearer"
+  ],
+  [
+   8,
+   "Throne hall night lanterns"
+  ],
+  [
+   9,
+   "Pavilion reflected lights"
+  ]
+ ],
+ "mongolia-steppe-monument": [
+  [
+   0,
+   "Ger single or double entrance"
+  ],
+  [
+   1,
+   "Horse saddle fringe"
+  ],
+  [
+   2,
+   "Raised ceremonial whip"
+  ],
+  [
+   3,
+   "Approach eagle wings"
+  ],
+  [
+   4,
+   "Rear terrace ceremonial banners"
+  ],
+  [
+   5,
+   "One or two grazing horses"
+  ],
+  [
+   6,
+   "Guide open or folded parasol"
+  ],
+  [
+   7,
+   "Camp covered or open cart"
+  ],
+  [
+   8,
+   "One or three illuminated arches"
+  ],
+  [
+   9,
+   "Ger entrance lantern pair"
+  ]
+ ],
+ "taiwan-taipei-afterglow": [
+  [
+   0,
+   "Upper tower corner ornament"
+  ],
+  [
+   1,
+   "Entrance guardian pair"
+  ],
+  [
+   2,
+   "Park sculpture silhouette"
+  ],
+  [
+   3,
+   "Rooftop canopy count"
+  ],
+  [
+   4,
+   "Morning delivery cargo"
+  ],
+  [
+   5,
+   "Afternoon bus rooftop"
+  ],
+  [
+   6,
+   "Evening shop awning"
+  ],
+  [
+   7,
+   "Tower illuminated band gap"
+  ],
+  [
+   8,
+   "Plaza lantern arcade"
+  ],
+  [
+   9,
+   "Office heart or diamond lights"
+  ]
+ ]
+}
