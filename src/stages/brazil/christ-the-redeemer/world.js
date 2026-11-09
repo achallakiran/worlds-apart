@@ -197,111 +197,198 @@ function createStage(E) {
     g(0, HS + 3.3, 0, 7.4, 3.6, 7.4, 0x2c2f35);                        // dark granite pedestal
     g(0, HS + 5.15, 0, 7.8, 0.3, 7.8, 0x3a3e45);                       // cornice
     g(3.72, HS + 3.3, 0, 0.08, 1.2, 2.2, 0x474c55);                    // inscription slab
-    // Statue: arms along local x, face toward +z; turned 90 degrees so the arms span the default view.
-    // S = glowing base volume (cream floodlit at night); G = static carved relief on top of it (stays dark
-    // at night, so folds read as carved grooves day and night). SK scales everything.
-    const S = (x, y, z, sx, sy, sz, day, night) => lamp(z * SK, Y0 + y * SK, x * SK, sz * SK, sy * SK, sx * SK, day, night);
-    const G = (x, y, z, sx, sy, sz, c) => g(z * SK, Y0 + y * SK, x * SK, sz * SK, sy * SK, sx * SK, c);
-    const BASE = 0xaab2a4, STONE_N = 0xfff1cf, RIDGE = 0xd3dce3, LIGHT = 0xe6edf2, GROOVE = 0x778088, SHADOW = 0x626b72, DRAPE = 0xa5ad9f, HAIR = 0x9aa294, HAIR_N = 0xf0d699;
-
-    // ---- long pleated skirt (deep vertical pleats all round) and tunic, in tiers that flare toward the hem ----
-    const TIERS = [];
-    for (let j = 0; j < 8; j++) { const lo = j * 0.7, mid = lo + 0.35; TIERS.push([lo, lo + 0.7, 2.15 - (2.15 - 1.55) * (mid / 5.6), 1.2 - 0.32 * (mid / 5.6)]); }
-    TIERS.push([5.6, 8.0, 1.45, 0.85], [8.0, 10.4, 1.5, 0.85], [10.4, 12.4, 1.75, 0.88]);
-    for (const [lo, hi, half, dh] of TIERS) {
-      S(0, (lo + hi) / 2, 0, half * 2, hi - lo, dh * 2, BASE, STONE_N);
-      if (hi <= 5.6) {                                                     // pleat ridges front and back
-        const n = Math.round(half / 0.2);
-        for (let k = -n; k <= n; k++) for (const zz of [dh + 0.03, -dh - 0.03]) G(k / n * half * 0.95, (lo + hi) / 2, zz, 0.21, hi - lo - 0.04, 0.07, k % 2 ? RIDGE : LIGHT);
-        for (const sx of [half + 0.03, -half - 0.03]) for (let k = -3; k <= 3; k++) G(sx, (lo + hi) / 2, k * dh / 3.4, 0.07, hi - lo - 0.04, 0.2, k % 2 ? RIDGE : LIGHT); // side pleats
-      } else {                                                             // tunic: long back folds
-        for (let k = -3; k <= 3; k++) G(k * half / 3.4, (lo + hi) / 2, -dh - 0.03, 0.26, hi - lo - 0.04, 0.07, k % 2 ? RIDGE : GROOVE);
-      }
-    }
-    G(0, 0.1, 0, 4.5, 0.22, 2.6, 0xb5bfc6);                                // hem band
-    for (const s of [-1, 1]) G(s * 0.7, 0.12, 1.3, 0.8, 0.24, 0.5, 0xb0bac1); // feet
-
-    // ---- mantle: diagonal drape across the chest, long hanging fold, V neckline ----
-    for (let t = 0; t < 9; t++) {
-      const cx = -1.55 + t * 0.4, cy = 12.1 - t * 0.62;
-      G(cx, cy, 0.9, 0.62, 0.52, 0.12, LIGHT);
-      G(cx + 0.18, cy - 0.34, 0.9, 0.62, 0.1, 0.06, SHADOW);
-      G(cx - 0.05, cy - 0.7, 0.89, 0.5, 0.1, 0.05, GROOVE);                // second parallel fold
-    }
-    G(1.45, 8.6, 0.93, 0.85, 7.4, 0.1, LIGHT);                             // long hanging fold
-    for (const dx of [-0.28, 0, 0.28]) G(1.45 + dx, 8.6, 0.99, 0.07, 7.2, 0.05, GROOVE);
-    G(1.9, 8.6, 0.9, 0.1, 7.2, 0.08, SHADOW);
-    for (const s of [-1, 1]) for (let t = 0; t < 4; t++) G(s * (0.5 - t * 0.1), 12.9 - t * 0.5, 0.92, 0.24, 0.5, 0.07, SHADOW); // V neckline
-    G(0, 8.0, 0.9, 2.6, 0.1, 0.06, SHADOW);                                // waist fold
-    for (const k of [-1.1, -0.45, 0.2, 0.85]) G(k, 9.4, 0.9, 0.08, 1.6, 0.05, GROOVE); // chest creases
-    S(0, 12.0, -0.8, 3.4, 2.4, 0.5, DRAPE, STONE_N);                       // cloak behind the shoulders
-    for (let k = -4; k <= 4; k++) G(k * 0.4, 12.0, -1.07, 0.1, 2.3, 0.05, k % 2 ? SHADOW : GROOVE);
-
-    // ---- shoulders, arms, sleeves with fold lines, hands ----
-    S(0, 12.95, 0, 3.8, 1.0, 1.5, BASE, STONE_N);
-    for (const s of [-1, 1]) {
-      S(s * 4.5, 12.95, 0, 5.4, 0.8, 1.0, 0xb3baaa, STONE_N);               // upper arm
-      S(s * 6.85, 12.85, 0, 1.4, 0.7, 0.75, 0xb3baaa, STONE_N);            // forearm
-      S(s * 7.55, 12.8, 0, 0.7, 0.5, 0.8, 0xc7cdbe, STONE_N);              // palm
-      for (let f = 0; f < 4; f++) G(s * 8.05, 12.83, -0.3 + f * 0.2, 0.5, 0.1, 0.15, 0xc2cbd2);  // fingers
-      G(s * 7.7, 12.76, 0.48, 0.4, 0.1, 0.2, 0xc2cbd2);                    // thumb
-      for (let i = 0; i < 13; i++) {                                         // hanging sleeve as columns
-        const u = i / 12, x = 1.85 + u * 5.2, w = 0.47;
-        const hang = 0.5 + 3.5 * Math.pow(1 - u, 0.85) + (i % 2 ? -0.18 : 0.12);
-        const dz = 0.38 + 0.4 * (1 - u);
-        S(s * x, 12.5 - hang / 2, 0, w, hang, dz * 2, DRAPE, DRAPE === 0 ? 0 : 0xf0d9a6);
-        for (const zz of [dz + 0.03, -dz - 0.03]) G(s * x, 12.5 - hang / 2, zz, 0.07, hang - 0.12, 0.05, i % 2 ? GROOVE : SHADOW); // fold line
-        G(s * x, 12.5 - hang, 0, w + 0.04, 0.09, dz * 2 + 0.1, LIGHT);   // scalloped lower edge
-      }
-      G(s * 1.9, 11.9, 0.62, 0.1, 1.4, 0.05, SHADOW);
-    }
-
-    // ---- head: modelled at ~0.1 m cells as a relief map (brow, deep-set lids, long nose, moustache, lips, pointed beard) ----
+    // ====== The statue: ONE merged flat-colour mesh. Every part uses the same colour pipeline (so face, robe and arms
+    // match exactly), faces are shaded per side (top light, bottom dark), and each vertex has a day and a night colour.
+    // Statue space: arms along x, face toward +z, ~1 m units, 16 tall; turned 90 degrees so the arms span the default view.
+    const BufGeo = Object.getPrototypeOf(cube.constructor);
+    const Attr = cube.attributes.position.constructor;
+    const SB = [];
+    const P = (x, y, z, sx, sy, sz, c) => SB.push(z * SK, Y0 + y * SK, x * SK, sz * SK, sy * SK, sx * SK, c);
     const mixC = (c1, c2, t) => { const r = (c1 >> 16 & 255) + ((c2 >> 16 & 255) - (c1 >> 16 & 255)) * t, gg = (c1 >> 8 & 255) + ((c2 >> 8 & 255) - (c1 >> 8 & 255)) * t, bb = (c1 & 255) + ((c2 & 255) - (c1 & 255)) * t; return (r | 0) << 16 | (gg | 0) << 8 | (bb | 0); };
-    S(0, 13.8, 0, 0.95, 0.7, 0.95, 0xb5bcae, STONE_N);                      // neck
-    G(0, 13.45, 0.42, 1.0, 0.1, 0.4, SHADOW);                               // shadow under the chin
-    S(0, 15.15, 0, 1.25, 1.4, 1.15, 0xc3cabc, 0xfff6e0);                    // upper head (y 14.45–15.85)
-    S(0, 14.2, 0.0, 0.95, 0.5, 1.0, 0xbec5b7, 0xfff1d6);                    // jaw
-    S(0, 13.8, -0.05, 0.6, 0.3, 0.8, 0xb9c0b2, 0xf6e2b4);                   // chin
-    S(0, 15.7, -0.12, 1.6, 0.7, 1.45, HAIR, HAIR_N);                        // crown of hair
-    S(0, 14.7, -0.64, 1.6, 2.5, 0.5, HAIR, HAIR_N);                         // hair behind
-    for (const s of [-1, 1]) S(s * 0.82, 14.45, -0.02, 0.42, 2.8, 1.25, HAIR, HAIR_N); // locks falling past the face to the shoulders
-    const zf = (y) => (y > 14.45 ? 0.575 : y > 13.95 ? 0.5 : 0.4);          // face plane depth per row
     const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-    for (let yy = 13.75; yy < 15.78; yy += 0.1) {
-      const v = yy - 14.95;                                                  // eyes sit at v = +0.3
-      const half = v >= -0.35 ? 0.6 : 0.6 - (-0.35 - v) * 0.44;             // face half-width; beard tapers to a point
-      for (let xx = -0.6; xx <= 0.601; xx += 0.1) {
+    const CD = 0x78827a, CM = 0xaeb7a8, CL = 0xdce1d3, CH = 0xeef1e6;       // deep groove / stone / light / highlight
+    const HD = 0x727a72, HM = 0x9ca496, HL = 0xbcc3b5;                       // hair
+    const shade = (t) => mixC(CD, CL, cl(t, 0, 1));
+
+    // ring of pleat/fold boxes around a rounded-rectangular cross-section
+    function ring(yLo, yHi, a, b, lam, amp, backOnly) {
+      const N = 720, pts = []; let L = 0, prev = null;
+      for (let i = 0; i <= N; i++) {
+        const t = i / N * Math.PI * 2, c = Math.cos(t), sn = Math.sin(t);
+        const x = a * Math.sign(c) * Math.pow(Math.abs(c), 0.7), z = b * Math.sign(sn) * Math.pow(Math.abs(sn), 0.7);
+        if (prev) L += Math.hypot(x - prev[0], z - prev[1]);
+        pts.push([x, z, L]); prev = [x, z];
+      }
+      const np = Math.max(6, Math.round(L / lam)), h = yHi - yLo, yM = (yLo + yHi) / 2;
+      P(0, yM, 0, 2 * (a - 0.1), h, 2 * b * 0.74, CD); P(0, yM, 0, 2 * a * 0.74, h, 2 * (b - 0.1), CD);
+      let next = 0;
+      for (const [x, z, l] of pts) {
+        if (l < next) continue; next = l + 0.13;
+        const r = 0.5 + 0.5 * Math.cos(l / L * np * Math.PI * 2);
+        const d = backOnly && z > 0 ? amp * 0.25 * r : amp * Math.pow(r, 1.2);
+        let nx = x / (a * a), nz = z / (b * b); const nl = Math.hypot(nx, nz) || 1; nx /= nl; nz /= nl;
+        P(x + nx * d, yM, z + nz * d, 0.15, h, 0.15, shade(0.25 + 0.75 * r));
+      }
+    }
+    const skirtA = (y) => 2.15 - 0.6 * (y / 5.6), skirtB = (y) => 1.2 - 0.32 * (y / 5.6);
+    const torsoA = (y) => 1.45 + 0.3 * smooth(8, 12.4, y), torsoB = (y) => 0.85 + 0.03 * smooth(8, 12.4, y);
+
+    // ---- long skirt: ~35 deep rounded pleats all round, flaring to the hem ----
+    for (let j = 0; j < 16; j++) {
+      const y0 = j * 0.35, ym = y0 + 0.175;
+      ring(y0, y0 + 0.35, skirtA(ym) + (j === 0 ? 0.08 : 0), skirtB(ym) + (j === 0 ? 0.06 : 0), 0.42, 0.1, false);
+    }
+    P(0, 0.08, 0, 4.75, 0.16, 2.8, CL);                                       // hem band
+    for (const sd of [-1, 1]) P(sd * 0.7, 0.1, 1.35, 0.8, 0.2, 0.5, 0xc7cfc3);  // feet
+
+    // ---- tunic: broad cloth folds, heavier on the back ----
+    for (let j = 0; j < 17; j++) {
+      const y0 = 5.6 + j * 0.4, ym = y0 + 0.2;
+      ring(y0, y0 + 0.4, torsoA(ym), torsoB(ym), 0.75, 0.07, true);
+    }
+    // front mantle, hanging fold, V neckline and chest creases as relief cells
+    const MP0 = [-1.55, 12.4], MP1 = [1.45, 6.0], MV = [MP1[0] - MP0[0], MP1[1] - MP0[1]], ML = Math.hypot(MV[0], MV[1]);
+    const MVx = MV[0] / ML, MVy = MV[1] / ML, MNx = -MVy, MNy = MVx;
+    for (let yy = 5.8; yy < 12.9; yy += 0.08) {
+      const a = torsoA(yy), zb = torsoB(yy) + 0.06;
+      for (let xx = -a + 0.04; xx < a - 0.02; xx += 0.08) {
+        const qx = xx - MP0[0], qy = yy - MP0[1], al = qx * MVx + qy * MVy, di = qx * MNx + qy * MNy;
+        let h = 0, t = 0.38;
+        if (al > 0 && al < ML && Math.abs(di) < 0.62) {                        // diagonal mantle across the chest
+          const e = 1 - (di / 0.62) ** 2;
+          h = 0.14 * Math.pow(e, 0.7) + 0.04 * Math.sin(di * 12 + al * 0.8) ; t = 0.55 + 0.4 * Math.sin(di * 12 + al * 0.8) * 0.5 + 0.2 * e;
+        } else if (al > 0.3 && al < ML - 0.5 && Math.abs(di - 0.95) < 0.3) { // lower parallel fold
+          h = 0.07 * (1 - ((di - 0.95) / 0.3) ** 2); t = 0.5;
+        }
+        const hx = xx - 0.08 * Math.sin(yy * 0.9);
+        if (hx > 0.95 && hx < 1.95 && yy > 5.4 && yy < 12.3) {                  // long hanging fold with creases
+          const e = 1 - ((hx - 1.45) / 0.5) ** 2;
+          h = Math.max(h, 0.12 * e + 0.035 * Math.sin(hx * 17)); t = 0.5 + 0.4 * Math.sin(hx * 17) * 0.5;
+        }
+        if (yy > 11.6 && yy < 13.0 && Math.abs(xx) < 0.12 + 0.5 * (yy - 11.6) / 1.4) { h = -0.05; t = 0.15; } // V neckline recess
+        if (yy > 9.3 && yy < 12 && h < 0.02) { h += 0.03 * Math.sin(9 * yy + 2 * xx); t = 0.45 + 0.4 * Math.sin(9 * yy + 2 * xx) * 0.5; }
+        const hh = Math.max(0.03, h + 0.05);
+        P(xx, yy, zb - 0.04 + hh / 2, 0.08, 0.08, hh, shade(t));
+      }
+    }
+    for (let yy = 5.8; yy < 12.7; yy += 0.1) for (let xx = -1.7; xx < 1.7; xx += 0.1) {  // cloak folds down the back
+      if (Math.abs(xx) > torsoA(yy) - 0.02) continue;
+      const f = 0.5 + 0.5 * Math.sin(xx * 7 + 0.8 * Math.sin(yy * 0.7)), hh = 0.05 + 0.09 * f;
+      P(xx, yy, -(torsoB(yy) + 0.06) - hh / 2 + 0.04, 0.1, 0.1, hh, shade(0.25 + 0.6 * f));
+    }
+    P(0, 12.95, 0, 3.8, 1.0, 1.5, CM);                                          // shoulders
+    for (const sd of [-1, 1]) {
+      P(sd * 4.2, 12.95, 0, 5.0, 0.8, 1.0, 0xb4bcab);                           // upper arm
+      for (let k = 0; k < 9; k++) P(sd * (2.2 + k * 0.5), 13.37, 0, 0.07, 0.04, 0.9, CD); // creases over the arm
+      P(sd * 7.0, 12.88, 0, 1.2, 0.66, 0.76, 0xb4bcab);                         // forearm
+      P(sd * 6.45, 12.88, 0, 0.12, 0.8, 0.9, CL);                               // cuff
+      P(sd * 7.55, 12.82, 0, 0.7, 0.5, 0.8, 0xcfd6c6);                          // palm
+      for (let f = 0; f < 4; f++) P(sd * 8.1, 12.84, -0.3 + f * 0.2, 0.55, 0.1, 0.15, 0xcfd6c6); // fingers
+      P(sd * 7.7, 12.76, 0.48, 0.4, 0.1, 0.2, 0xcfd6c6);                        // thumb
+      // sleeve: cloth hanging from the arm, deep folds radiating from the shoulder, scalloped lower hem
+      const F = [1.6, 13.3];
+      for (let xp = 1.75; xp < 7.4; xp += 0.12) {
+        const u = (xp - 1.75) / 5.65, hang = 0.35 + 3.6 * Math.pow(1 - u, 0.85), zs = 0.30 + 0.30 * (1 - u);
+        for (let yy = 12.5; yy > 8.5; yy -= 0.12) {
+          const th = Math.atan2(yy - F[1], xp - F[0]), r = Math.hypot(xp - F[0], yy - F[1]);
+          const f = 0.5 + 0.5 * Math.cos(th * 30 + 0.9 * Math.sin(r * 0.6));
+          const fb = 0.5 + 0.5 * Math.cos(th * 30 + 1.9 + 0.7 * Math.sin(r * 0.5 + 1));
+          if (yy < 12.55 - hang - 0.16 * f + 0.1) continue;
+          const zf = zs + 0.14 * Math.pow(f, 1.2), zb2 = zs + 0.14 * Math.pow(fb, 1.2);
+          P(sd * xp, yy, (zf - zb2) / 2, 0.13, 0.13, zf + zb2, shade(0.22 + 0.68 * f));
+        }
+        const th = Math.atan2(12.55 - hang - F[1], xp - F[0]), ff = 0.5 + 0.5 * Math.cos(th * 30), yl = 12.55 - hang - 0.16 * ff + 0.1;
+        P(sd * xp, yl, 0, 0.13, 0.07, zs * 2 + 0.2, CH);                         // light lower hem edge
+      }
+    }
+
+    // ---- head: face at ~0.06 m cells as a relief map ----
+    P(0, 13.8, 0, 0.95, 0.7, 0.95, 0xb9c1b1);                                   // neck
+    P(0, 13.42, 0.4, 1.0, 0.1, 0.4, CD);                                         // shadow under the chin
+    P(0, 15.15, 0, 1.25, 1.4, 1.15, 0xc2cabb);                                   // upper head (y 14.45–15.85)
+    P(0, 14.2, 0.0, 0.95, 0.5, 1.0, 0xbcc4b5);                                   // jaw
+    P(0, 13.8, -0.05, 0.6, 0.3, 0.8, 0xb7bfb0);                                  // chin
+    P(0, 15.7, -0.12, 1.6, 0.7, 1.45, HM);                                       // crown of hair
+    P(0, 14.7, -0.64, 1.6, 2.5, 0.5, HM);                                        // hair behind
+    const zf0 = (y) => (y > 14.45 ? 0.575 : y > 13.95 ? 0.5 : 0.4);
+    const PIT = 0.06;
+    for (let yy = 13.72; yy < 15.8; yy += PIT) {
+      const v = yy - 14.95;                                                       // eyes sit at v = +0.3
+      const half = v >= -0.35 ? 0.6 : 0.6 - (-0.35 - v) * 0.44;
+      for (let xx = -0.6; xx <= 0.601; xx += PIT) {
         const ax = Math.abs(xx);
         if (ax > half + 0.001) continue;
-        let d = 0.04 + 0.1 * (1 - (xx / 0.64) ** 2), col = null;
-        if (v > 0.45) d += 0.03;                                             // forehead
-        if (v > 0.38 && v < 0.52 && ax > 0.08 && ax < 0.52) d += 0.1;        // brow ridge
-        if (v > 0.2 && v < 0.38 && ax > 0.12 && ax < 0.48) { d -= 0.08; if (v > 0.27 && ax > 0.15 && ax < 0.44) col = 0x40463f; } // deep-set eye + heavy lid
-        if (ax < 0.1 && v > -0.2 && v < 0.42) d += 0.24;                     // long nose bridge
-        if (ax < 0.15 && v > -0.24 && v < -0.1) { d += 0.32; if (ax > 0.09 && v < -0.14) col = 0x59605a; } // nose tip and nostrils
-        if (ax > 0.22 && ax < 0.5 && v > -0.28 && v < 0.12) d += 0.05;       // cheekbones
-        if (v > -0.46 && v < -0.28 && ax < 0.42 - 0.3 * Math.max(0, ax - 0.2)) d += 0.1; // moustache
-        if (v > -0.51 && v < -0.46 && ax < 0.17) { d -= 0.06; col = 0x565d56; } // mouth line
-        if (v > -0.58 && v <= -0.51 && ax < 0.15) d += 0.05;                 // lower lip
-        if (v <= -0.58) d += 0.12 + (Math.round(xx * 10) % 2 ? 0.02 : 0);    // beard with strand ridges
-        d = cl(d, 0.02, 0.5);
-        const t = cl(d / 0.42, 0, 1);
-        G(xx, yy, zf(yy) + d / 2, 0.1, 0.1, d, col !== null ? col : mixC(0x97a2a8, 0xeaf1f5, t));
+        let d = 0.04 + 0.1 * (1 - (xx / 0.64) ** 2), tone = 0.55, col = null;
+        if (v > 0.45) d += 0.03;                                                  // forehead
+        if (v > 0.52 && v < 0.88 && ax < 0.45 && Math.abs(((v - 0.52) % 0.15) - 0.07) < 0.025) { d -= 0.025; tone = 0.3; } // forehead lines
+        if (v > 0.38 && v < 0.5 && ax > 0.08 && ax < 0.52) { d += 0.1 - 0.06 * (ax / 0.5); tone = 0.65 + 0.2 * Math.sin(xx * 60); } // brow with hair lines
+        if (v > 0.18 && v < 0.38 && ax > 0.1 && ax < 0.5) {                      // eye socket
+          d -= 0.07;
+          if (v > 0.28 && ax > 0.14 && ax < 0.45) { col = 0x4a514b; }              // upper lid / lash line
+          else if (v > 0.22 && ax > 0.17 && ax < 0.42) { d += 0.05; tone = 0.9; }  // eyeball
+          else if (v < 0.22) { d += 0.03; tone = 0.4; }                            // lower lid
+          if (ax < 0.16) { d -= 0.03; tone = 0.25; }                               // inner corner
+        }
+        if (ax < 0.07 && v > -0.2 && v < 0.42) d += 0.26;                         // nose bridge
+        else if (ax < 0.13 && v > -0.14 && v < 0.35) d += 0.18 * (1 - (ax - 0.07) / 0.06 * 0.5); // nose sides
+        if (v > -0.25 && v < -0.1 && ax < 0.17) {                                  // tip and wings
+          d += ax < 0.09 ? 0.34 : 0.22; tone = ax < 0.09 ? 0.9 : 0.6;
+          if (v < -0.17 && ax > 0.04 && ax < 0.1) { col = 0x555d56; d -= 0.1; }    // nostrils
+        }
+        if (ax > 0.2 && ax < 0.5 && v > -0.08 && v < 0.2) d += 0.06;              // cheekbones
+        if (ax > 0.25 && ax < 0.48 && v > -0.4 && v < -0.12) { d -= 0.03; tone = 0.35; } // cheek hollows
+        if (v > -0.34 && v < -0.26 && ax < 0.04) { d -= 0.02; tone = 0.3; }       // philtrum
+        if (v > -0.47 && v < -0.27 && ax < 0.44 - 0.3 * Math.max(0, ax - 0.2)) { d += 0.1; tone = 0.5 + 0.35 * Math.sin(xx * 70 + v * 20); } // moustache with strands
+        if (v > -0.53 && v <= -0.47 && ax < 0.2) { d += 0.07; tone = 0.8; }       // upper lip
+        if (v > -0.57 && v <= -0.53 && ax < 0.2) { col = 0x535b54; d -= 0.04; }    // mouth line
+        if (v > -0.65 && v <= -0.57 && ax < 0.16) { d += 0.09; tone = 0.85; }      // lower lip
+        if (v > -0.7 && v <= -0.65 && ax < 0.14) { d -= 0.03; tone = 0.25; }        // under-lip shadow
+        if (v <= -0.7) { const ang = Math.atan2(xx, -(v + 0.45)); const rr = 0.5 + 0.5 * Math.cos(ang * 22); d += 0.13 + 0.05 * rr; tone = 0.35 + 0.5 * rr; } // beard strands converging to the point
+        if (ax > 0.5 && ax <= 0.6 && v > -0.3) { d -= 0.02; tone = 0.4; }          // temples / jaw edge
+        d = cl(d, 0.02, 0.52);
+        P(xx, yy, zf0(yy) + d / 2, PIT, PIT, d, col !== null ? col : shade(0.12 + 0.55 * cl(d / 0.4, 0, 1) + 0.3 * (tone - 0.5)));
       }
     }
-    for (const s of [-1, 1]) {                                               // hair strands down both sides, widening toward the shoulders
-      for (let k = 0; k < 6; k++) {
-        const wob = 0.02 * Math.sin(k * 1.7);
-        G(s * (0.66 + 0.1 * k + wob), 14.45, 0.63, 0.03, 2.7, 0.03, k % 2 ? 0x858e96 : 0xaab4bb);
+    // hair: parted in the middle, individual strands, locks falling to the shoulders
+    for (const sd of [-1, 1]) {
+      for (let j = 0; j < 8; j++) {
+        for (let sg = 0; sg < 6; sg++) {
+          const yc = 15.85 - sg * 0.48 - 0.24, wob = 0.03 * Math.sin(j * 1.3 + sg * 0.9);
+          P(sd * (0.68 + 0.08 * j + 0.022 * sg + wob), yc, 0.02 - 0.03 * j, 0.085, 0.5, 1.2 - 0.06 * j, mixC(HD, HL, j % 2 ? 0.3 : 0.75));
+        }
       }
-      for (let k = 0; k < 4; k++) G(s * 1.045, 14.5, 0.1 - 0.28 * k, 0.03, 2.7, 0.2, k % 2 ? 0x858e96 : 0x9ba5ac);
     }
-    G(0, 15.9, 0.6, 1.28, 0.12, 0.06, 0xa3adb4);                                // hairline across the forehead
-    for (const xx of [-0.5, -0.3, -0.12, 0.12, 0.3, 0.5]) G(xx, 15.8, 0.61, 0.04, 0.16, 0.04, 0x858e96);
-    for (const xx of [-0.75, -0.55, -0.35, -0.18, 0.18, 0.35, 0.55, 0.75]) G(xx, 16.06, -0.12, 0.04, 0.03, 1.3, 0x858e96); // strands over the crown
-    G(0, 16.065, 0.06, 0.06, 0.03, 1.35, 0x687078);                         // centre parting
-    for (let k = -4; k <= 4; k++) G(k * 0.17, 14.95, -0.92, 0.05, 2.4, 0.04, k % 2 ? 0x858e96 : 0x778088); // strands down the back
+    for (let k = -9; k <= 9; k++) for (let sg = 0; sg < 3; sg++) P(k * 0.075, 15.62 + sg * 0.14 * 0 + (sg - 1) * 0.0, 0.6 - sg * 0.02, 0.07, 0.2 + sg * 0.0, 0.07, mixC(HD, HL, 0.5 + 0.4 * Math.sin(k * 1.7))); // hair framing the forehead
+    for (const xx of [-0.75, -0.55, -0.35, -0.18, 0.18, 0.35, 0.55, 0.75]) P(xx, 16.06, -0.12, 0.04, 0.03, 1.3, HD);       // strands over the crown
+    P(0, 16.065, 0.06, 0.06, 0.03, 1.35, 0x5f675f);                              // centre parting
+    for (let k = -4; k <= 4; k++) P(k * 0.17, 14.95, -0.92, 0.05, 2.4, 0.04, k % 2 ? HD : HM);  // strands down the back
+
+    // ---- turn the boxes into one mesh ----
+    const NB = SB.length / 7, pos = new Float32Array(NB * 72), dayC = new Float32Array(NB * 72), nightC = new Float32Array(NB * 72), idx = [];
+    const FACES = [[0.92, [[1, -1, -1], [1, 1, -1], [1, 1, 1], [1, -1, 1]]], [0.7, [[-1, -1, 1], [-1, 1, 1], [-1, 1, -1], [-1, -1, -1]]],
+      [1.0, [[-1, 1, -1], [-1, 1, 1], [1, 1, 1], [1, 1, -1]]], [0.5, [[-1, -1, 1], [-1, -1, -1], [1, -1, -1], [1, -1, 1]]],
+      [0.84, [[-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]]], [0.68, [[1, -1, -1], [-1, -1, -1], [-1, 1, -1], [1, 1, -1]]]];
+    const CREAM = new Color(0xfff1cf), tmp = new Color();
+    for (let i = 0; i < NB; i++) {
+      const [x, y, z, sx, sy, sz, c] = SB.slice(i * 7, i * 7 + 7);
+      tmp.set(c); const lum = 0.3 * tmp.r + 0.59 * tmp.g + 0.11 * tmp.b, kN = 0.38 + 0.62 * cl((lum - 0.1) / 0.65, 0, 1);
+      FACES.forEach(([f, verts], fi) => {
+        verts.forEach(([vx, vy, vz], vi) => {
+          const o = (i * 24 + fi * 4 + vi) * 3;
+          pos[o] = x + vx * sx / 2; pos[o + 1] = y + vy * sy / 2; pos[o + 2] = z + vz * sz / 2;
+          dayC[o] = tmp.r * f; dayC[o + 1] = tmp.g * f; dayC[o + 2] = tmp.b * f;
+          const fn = kN * (0.55 + 0.45 * f);
+          nightC[o] = CREAM.r * fn; nightC[o + 1] = CREAM.g * fn; nightC[o + 2] = CREAM.b * fn;
+        });
+        const b0 = i * 24 + fi * 4; idx.push(b0, b0 + 1, b0 + 2, b0, b0 + 2, b0 + 3);
+      });
+    }
+    const geo = new BufGeo(), colAttr = new Attr(new Float32Array(dayC), 3);
+    geo.setAttribute('position', new Attr(pos, 3)); geo.setAttribute('color', colAttr); geo.setIndex(idx);
+    const statueMesh = new Mesh(geo, new BasicMaterial({ vertexColors: true, side: 2 }));
+    statueMesh.userData.motion = true; statueMesh.userData.ownedMaterial = true; statueMesh.raycast = () => {}; statueMesh.frustumCulled = false;
+    world.add(statueMesh);
+    U.statue = { attr: colAttr, day: dayC, night: nightC, glow: 0 };
 
     // floodlights and beams at the foot of the pedestal
     for (const [sx, sz] of [[5.4, 5.4], [-5.4, 5.4], [5.4, -5.4], [-5.4, -5.4]]) {
@@ -556,6 +643,12 @@ function createStage(E) {
     const u = world.userData;
     for (const l of u.wallLights || []) l.m.material.color.set(l.day).lerp(new Color(l.night), glow);
     for (const l of u.localLights || []) l.intensity = glow * (l.userData.nightPower || 24);
+    const st = u.statue;
+    if (st && Math.abs(glow - st.glow) > 0.004) {
+      const arr = st.attr.array, d = st.day, n = st.night;
+      for (let i = 0; i < arr.length; i++) arr[i] = d[i] + (n[i] - d[i]) * glow;
+      st.attr.needsUpdate = true; st.glow = glow;
+    }
   }
 
   return { build, animate, height, water: () => false, updateLighting };
