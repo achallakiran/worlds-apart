@@ -211,7 +211,7 @@ function createStage(E) {
     const shade = (t) => mixC(CD, CL, cl(t, 0, 1));
 
     // ring of pleat/fold boxes around a rounded-rectangular cross-section
-    function ring(yLo, yHi, a, b, lam, amp, backOnly) {
+    function ring(yLo, yHi, a, b, lam, amp, backOnly, npFix) {
       const N = 720, pts = []; let L = 0, prev = null;
       for (let i = 0; i <= N; i++) {
         const t = i / N * Math.PI * 2, c = Math.cos(t), sn = Math.sin(t);
@@ -219,24 +219,24 @@ function createStage(E) {
         if (prev) L += Math.hypot(x - prev[0], z - prev[1]);
         pts.push([x, z, L]); prev = [x, z];
       }
-      const np = Math.max(6, Math.round(L / lam)), h = yHi - yLo, yM = (yLo + yHi) / 2;
-      P(0, yM, 0, 2 * (a - 0.1), h, 2 * b * 0.74, CD); P(0, yM, 0, 2 * a * 0.74, h, 2 * (b - 0.1), CD);
+      const np = npFix || Math.max(6, Math.round(L / lam)), h = yHi - yLo, yM = (yLo + yHi) / 2;
+      P(0, yM, 0, 2 * (a - 0.03), h, 2 * b * 0.74, CD); P(0, yM, 0, 2 * a * 0.74, h, 2 * (b - 0.03), CD);
       let next = 0;
       for (const [x, z, l] of pts) {
-        if (l < next) continue; next = l + 0.13;
+        if (l < next) continue; next = l + 0.1;
         const r = 0.5 + 0.5 * Math.cos(l / L * np * Math.PI * 2);
-        const d = backOnly && z > 0 ? amp * 0.25 * r : amp * Math.pow(r, 1.2);
+        const rg = 1 - Math.pow(1 - r, 3), d = backOnly && z > 0 ? amp * 0.25 * rg : amp * rg;
         let nx = x / (a * a), nz = z / (b * b); const nl = Math.hypot(nx, nz) || 1; nx /= nl; nz /= nl;
-        P(x + nx * d, yM, z + nz * d, 0.15, h, 0.15, shade(0.25 + 0.75 * r));
+        P(x + nx * d, yM, z + nz * d, 0.12, h, 0.12, shade(0.06 + 0.94 * rg));
       }
     }
     const skirtA = (y) => 2.15 - 0.6 * (y / 5.6), skirtB = (y) => 1.2 - 0.32 * (y / 5.6);
     const torsoA = (y) => 1.45 + 0.3 * smooth(8, 12.4, y), torsoB = (y) => 0.85 + 0.03 * smooth(8, 12.4, y);
 
     // ---- long skirt: ~35 deep rounded pleats all round, flaring to the hem ----
-    for (let j = 0; j < 16; j++) {
-      const y0 = j * 0.35, ym = y0 + 0.175;
-      ring(y0, y0 + 0.35, skirtA(ym) + (j === 0 ? 0.08 : 0), skirtB(ym) + (j === 0 ? 0.06 : 0), 0.42, 0.1, false);
+    for (let j = 0; j < 22; j++) {
+      const y0 = j * 0.26, ym = y0 + 0.13;
+      ring(y0, y0 + 0.26, skirtA(ym) + (j === 0 ? 0.08 : 0), skirtB(ym) + (j === 0 ? 0.06 : 0), 0.5, 0.2 + 0.06 * (1 - ym / 5.7), false, 30);
     }
     P(0, 0.08, 0, 4.75, 0.16, 2.8, CL);                                       // hem band
     for (const sd of [-1, 1]) P(sd * 0.7, 0.1, 1.35, 0.8, 0.2, 0.5, 0xc7cfc3);  // feet
@@ -244,7 +244,7 @@ function createStage(E) {
     // ---- tunic: broad cloth folds, heavier on the back ----
     for (let j = 0; j < 17; j++) {
       const y0 = 5.6 + j * 0.4, ym = y0 + 0.2;
-      ring(y0, y0 + 0.4, torsoA(ym), torsoB(ym), 0.75, 0.07, true);
+      ring(y0, y0 + 0.4, torsoA(ym), torsoB(ym), 0.75, 0.07, true, 14);
     }
     // front mantle, hanging fold, V neckline and chest creases as relief cells
     const MP0 = [-1.55, 12.4], MP1 = [1.45, 6.0], MV = [MP1[0] - MP0[0], MP1[1] - MP0[1]], ML = Math.hypot(MV[0], MV[1]);
@@ -256,20 +256,28 @@ function createStage(E) {
         let h = 0, t = 0.38;
         if (al > 0 && al < ML && Math.abs(di) < 0.62) {                        // diagonal mantle across the chest
           const e = 1 - (di / 0.62) ** 2;
-          h = 0.14 * Math.pow(e, 0.7) + 0.04 * Math.sin(di * 12 + al * 0.8) ; t = 0.55 + 0.4 * Math.sin(di * 12 + al * 0.8) * 0.5 + 0.2 * e;
+          const w = 0.5 + 0.5 * Math.sin(di * 10 + al * 0.9), wg = 1 - Math.pow(1 - w, 3); h = 0.2 * Math.pow(e, 0.7) + 0.09 * wg * e; t = 0.15 + 0.7 * wg * (0.5 + 0.5 * e) + 0.15 * e;
         } else if (al > 0.3 && al < ML - 0.5 && Math.abs(di - 0.95) < 0.3) { // lower parallel fold
-          h = 0.07 * (1 - ((di - 0.95) / 0.3) ** 2); t = 0.5;
+          h = 0.13 * (1 - ((di - 0.95) / 0.3) ** 2); t = 0.15 + 0.7 * (1 - ((di - 0.95) / 0.3) ** 2);
         }
         const hx = xx - 0.08 * Math.sin(yy * 0.9);
         if (hx > 0.95 && hx < 1.95 && yy > 5.4 && yy < 12.3) {                  // long hanging fold with creases
           const e = 1 - ((hx - 1.45) / 0.5) ** 2;
-          h = Math.max(h, 0.12 * e + 0.035 * Math.sin(hx * 17)); t = 0.5 + 0.4 * Math.sin(hx * 17) * 0.5;
+          const w = 0.5 + 0.5 * Math.sin(hx * 15 + yy * 0.3), wg = 1 - Math.pow(1 - w, 3); h = Math.max(h, 0.2 * e + 0.08 * wg * e); t = 0.1 + 0.8 * wg * (0.4 + 0.6 * e);
         }
         if (yy > 11.6 && yy < 13.0 && Math.abs(xx) < 0.12 + 0.5 * (yy - 11.6) / 1.4) { h = -0.05; t = 0.15; } // V neckline recess
-        if (yy > 9.3 && yy < 12 && h < 0.02) { h += 0.03 * Math.sin(9 * yy + 2 * xx); t = 0.45 + 0.4 * Math.sin(9 * yy + 2 * xx) * 0.5; }
+        if (yy > 5.9 && yy < 12 && h < 0.05) {                                  // diagonal cloth folds over stomach and lower chest
+          const w = 0.5 + 0.5 * Math.sin((yy < 9.3 ? 5.5 : 8) * (yy + 0.55 * xx) + 0.6 * Math.sin(xx * 3)), wg = 1 - Math.pow(1 - w, 3);
+          h += 0.11 * wg; t = 0.1 + 0.85 * wg;
+        }
         const hh = Math.max(0.03, h + 0.05);
         P(xx, yy, zb - 0.04 + hh / 2, 0.08, 0.08, hh, shade(t));
       }
+    }
+    for (let xx = -1.65; xx < 1.65; xx += 0.1) {                                // overhanging scalloped hem of the tunic
+      const sc = 0.5 + 0.5 * Math.cos(xx * 6.5), hh = 0.3 + 0.16 * sc;
+      P(xx, 5.95 - hh / 2 + 0.1, torsoB(5.9) + 0.18, 0.1, hh, 0.3, shade(0.35 + 0.5 * sc));
+      P(xx, 5.95 - hh + 0.1, torsoB(5.9) + 0.18, 0.1, 0.05, 0.32, CH);
     }
     for (let yy = 5.8; yy < 12.7; yy += 0.1) for (let xx = -1.7; xx < 1.7; xx += 0.1) {  // cloak folds down the back
       if (Math.abs(xx) > torsoA(yy) - 0.02) continue;
@@ -291,13 +299,13 @@ function createStage(E) {
         const u = (xp - 1.75) / 5.65, hang = 0.35 + 3.6 * Math.pow(1 - u, 0.85), zs = 0.30 + 0.30 * (1 - u);
         for (let yy = 12.5; yy > 8.5; yy -= 0.12) {
           const th = Math.atan2(yy - F[1], xp - F[0]), r = Math.hypot(xp - F[0], yy - F[1]);
-          const f = 0.5 + 0.5 * Math.cos(th * 30 + 0.9 * Math.sin(r * 0.6));
-          const fb = 0.5 + 0.5 * Math.cos(th * 30 + 1.9 + 0.7 * Math.sin(r * 0.5 + 1));
-          if (yy < 12.55 - hang - 0.16 * f + 0.1) continue;
-          const zf = zs + 0.14 * Math.pow(f, 1.2), zb2 = zs + 0.14 * Math.pow(fb, 1.2);
-          P(sd * xp, yy, (zf - zb2) / 2, 0.13, 0.13, zf + zb2, shade(0.22 + 0.68 * f));
+          const f = 1 - Math.pow(1 - (0.5 + 0.5 * Math.cos(th * 17 + sd * 0.7 + 0.9 * Math.sin(r * 0.6))), 3);
+          const fb = 1 - Math.pow(1 - (0.5 + 0.5 * Math.cos(th * 17 + 1.9 + 0.7 * Math.sin(r * 0.5 + 1))), 3);
+          if (yy < 12.55 - hang - 0.32 * f + 0.1) continue;
+          const zf = zs + 0.3 * f, zb2 = zs + 0.3 * fb;
+          P(sd * xp, yy, (zf - zb2) / 2, 0.13, 0.13, zf + zb2, shade(0.06 + 0.92 * f));
         }
-        const th = Math.atan2(12.55 - hang - F[1], xp - F[0]), ff = 0.5 + 0.5 * Math.cos(th * 30), yl = 12.55 - hang - 0.16 * ff + 0.1;
+        const th = Math.atan2(12.55 - hang - F[1], xp - F[0]), ff = 1 - Math.pow(1 - (0.5 + 0.5 * Math.cos(th * 17 + sd * 0.7)), 3), yl = 12.55 - hang - 0.32 * ff + 0.1;
         P(sd * xp, yl, 0, 0.13, 0.07, zs * 2 + 0.2, CH);                         // light lower hem edge
       }
     }
