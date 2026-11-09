@@ -1,0 +1,58 @@
+{
+  "id": "brazil-christ-redeemer",
+  "name": "Christ the Redeemer",
+  "builder": 13,
+  "profile": 13,
+  "order": 130,
+  "baseSky": "0x8cc8ee",
+  "pandaPosition": [
+    -10,
+    17
+  ],
+  "lamps": {
+    "from": [
+      -9,
+      0.15,
+      19
+    ],
+    "step": [
+      2.2,
+      0,
+      0
+    ]
+  },
+  "starCount": 90,
+  "roundMoon": true,
+  "atmosphere": {
+    "waterSpots": [],
+    "cloudCount": 6,
+    "cloudAltitude": 30,
+    "birdAltitude": 28
+  },
+  "opening": {
+    "landscape": {
+      "yaw": 0.5,
+      "phi": 1.04,
+      "zoom": 1.5,
+      "tx": 0,
+      "tz": 0,
+      "ty": 15
+    },
+    "portrait": {
+      "yaw": 0.46,
+      "phi": 1.02,
+      "zoom": 1.4,
+      "tx": 0,
+      "tz": 0,
+      "ty": 15
+    }
+  },
+  "country": {
+    "id": "brazil",
+    "name": "Brazil",
+    "flag": "\\u{1F1E7}\\u{1F1F7}",
+    "threshold": 0
+  },
+  "music": "music.mp3",
+  "theme": "new-seven-wonders"
+}
