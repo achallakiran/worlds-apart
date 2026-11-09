@@ -287,9 +287,17 @@ const HEAD = {X0:-1.2,DX:0.04,YT:16.1,DY:0.04,zb:[0.50,0.50,0.50,0.50,0.50,0.51,
       }
     }
     for (const sd of [-1, 1]) {
-      P(sd * 7.0, 12.88, 0, 1.2, 0.66, 0.76, 0xb4bcab);                         // forearm
-      P(sd * 6.45, 12.88, 0, 0.12, 0.8, 0.9, CL);                               // cuff
-      P(sd * 7.55, 12.82, 0, 0.7, 0.5, 0.8, 0xcfd6c6);                          // palm
+      // wrist + palm: fine 0.06 cells that continue the sleeve (it ends at x=6.4, y 13.06-13.33) and ease down into the palm (y 12.57-13.07)
+      for (let x = 6.34; x < 7.92; x += 0.06) {
+        const t = Math.min(1, Math.max(0, (x - 6.34) / 0.86)), e = t * t * (3 - 2 * t);
+        const yt = 13.33 - 0.26 * e, yb = 13.03 - 0.46 * e, zbase = x < 7.2 ? 0.3 + 0.08 * e : 0.4 - Math.max(0, x - 7.7) * 1.2;
+        const nr = Math.max(2, Math.round((yt - yb) / 0.06));
+        for (let r = 0; r < nr; r++) {
+          const v = nr > 1 ? (r / (nr - 1)) * 2 - 1 : 0, zb = Math.max(0.1, zbase * Math.sqrt(Math.max(0.04, 1 - v * v * 0.85)));
+          const hsh = Math.sin(x * 91.7 + r * 37.3) * 0.5 + 0.5, y = yt - 0.03 - r * ((yt - yb - 0.06) / Math.max(1, nr - 1));
+          P(sd * x, y, 0, 0.065, (yt - yb) / nr + 0.005, zb * 2, shade(0.5 + 0.2 * hsh + (v < -0.3 ? 0.1 : 0)), shade(0.4 + 0.12 * hsh));
+        }
+      }
       for (let f = 0; f < 4; f++) P(sd * 8.1, 12.84, -0.3 + f * 0.2, 0.55, 0.1, 0.15, 0xcfd6c6); // fingers
       P(sd * 7.7, 12.76, 0.48, 0.4, 0.1, 0.2, 0xcfd6c6);                        // thumb
       // arm: a tapered cylinder (wide at the shoulder, narrower at the wrist) wrapped in robe, built from 0.1 blocks snapped to a grid;

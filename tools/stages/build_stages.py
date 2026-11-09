@@ -152,5 +152,20 @@ for cfg, _, _ in packages:
         json.dumps(cfg["id"]), json.dumps(cfg["countryId"]), json.dumps(cfg["name"]), cfg["builder"], cam(o["landscape"]), cam(o["portrait"]))
 s = s[:m.end() - 1] + entries + "]" + s[m.end():]
 
+# ---------- per-stage scenery-card thumbnails (the legacy card renderer cannot draw the tall merged stage meshes, so a stage may ship a pre-rendered 640x440 image) ----------
+import base64
+thumbs = {}
+for cfg, _, d in packages:
+    t = cfg.get("thumbnail")
+    if t and t.get("image"):
+        raw = open(os.path.join(d, t["image"]), "rb").read()
+        thumbs[cfg["builder"]] = "data:image/jpeg;base64," + base64.b64encode(raw).decode()
+if thumbs:
+    anchor = "function Bh(t){"
+    if s.count(anchor) != 1:
+        fail("scenery thumbnail function anchor missing")
+    table = "{" + ",".join("%d:%s" % (k, json.dumps(v)) for k, v in thumbs.items()) + "}"
+    s = s.replace(anchor, "var __STAGE_THUMBS=%s;function Bh(t){if(__STAGE_THUMBS[t])return __STAGE_THUMBS[t];" % table)
+
 open(out, "w", encoding="utf-8").write(s)
 print(f"built {out}: {len(packages)} stage package(s): {', '.join(ids)}; {len(s)} bytes")

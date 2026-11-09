@@ -54,5 +54,8 @@
     "threshold": 0
   },
   "music": "music.mp3",
-  "theme": "new-seven-wonders"
+  "theme": "new-seven-wonders",
+  "thumbnail": {
+    "image": "thumb.jpg"
+  }
 }
