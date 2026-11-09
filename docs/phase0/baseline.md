@@ -70,3 +70,6 @@ Live Pages state; per-stage gameplay; day/night visibility per difference; audio
 
 ## Not yet done in Phase 0
 Real-device FPS and startup; fixed-seed/time captures; per-stage gameplay pass and defect log; live Pages and hosted-build check; `v0-baseline` tag (push failed; create it from commit `5b6556e` or retry).
+
+## Temporary Pages entry
+Root `index.html` is a byte-for-byte copy of `legacy/Worlds-Apart-Offline.html`, added so the baseline is playable on GitHub Pages (branch `main`, root). It is a stopgap and will be replaced by the generated `release/pages` output in Phase 6; remove it then.
