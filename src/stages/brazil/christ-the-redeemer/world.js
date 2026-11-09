@@ -241,69 +241,70 @@ function createStage(E) {
     P(0, 0.08, 0, 4.75, 0.16, 2.8, CL);                                       // hem band
     for (const sd of [-1, 1]) P(sd * 0.7, 0.1, 1.35, 0.8, 0.2, 0.5, 0xc7cfc3);  // feet
 
-    // ---- tunic: broad cloth folds, heavier on the back ----
-    for (let j = 0; j < 17; j++) {
-      const y0 = 5.6 + j * 0.4, ym = y0 + 0.2;
-      ring(y0, y0 + 0.4, torsoA(ym), torsoB(ym), 0.75, 0.07, true, 14);
-    }
-    // front: smooth tunic with only the big forms — diagonal mantle, one long hanging fold, V neck, a few soft creases (each with an engraved groove)
-    const MP0 = [-1.55, 12.4], MP1 = [1.45, 6.0], MV = [MP1[0] - MP0[0], MP1[1] - MP0[1]], ML = Math.hypot(MV[0], MV[1]);
-    const MVx = MV[0] / ML, MVy = MV[1] / ML, MNx = -MVy, MNy = MVx;
-    for (let yy = 5.8; yy < 12.9; yy += 0.08) {
-      const a = torsoA(yy), zb = torsoB(yy) + 0.06;
-      for (let xx = -a + 0.04; xx < a - 0.02; xx += 0.08) {
-        const qx = xx - MP0[0], qy = yy - MP0[1], al = qx * MVx + qy * MVy, di = qx * MNx + qy * MNy;
-        let h = 0.02, t = 0.5;
-        if (al > 0 && al < ML && Math.abs(di) < 0.6) {
-          const e = 1 - (di / 0.6) ** 2, tp = Math.pow(Math.sin(Math.PI * al / ML), 0.4), gr = Math.exp(-((di / 0.05) ** 2));
-          h = 0.22 * Math.pow(e, 0.8) * tp - 0.08 * gr; t = 0.3 + 0.6 * e - 0.35 * gr;
-        } else if (al > 0.3 && al < ML - 0.6 && Math.abs(di - 1.0) < 0.32) {
-          const e = 1 - ((di - 1.0) / 0.32) ** 2; h = 0.14 * e; t = 0.25 + 0.6 * e;
-        }
-        const hx = xx - 0.08 * Math.sin(yy * 0.9), dx = Math.abs(hx - 1.45);
-        if (dx < 0.5 && yy > 5.5 + 1.6 * dx && yy < 12.3) {
-          const e = 1 - (dx / 0.5) ** 2, gr = Math.exp(-((dx / 0.05) ** 2)), hh2 = 0.26 * e - 0.08 * gr;
-          if (hh2 > h) { h = hh2; t = 0.25 + 0.65 * e - 0.3 * gr; }
-        }
-        for (const c of [9.0, 8.1, 7.2]) { const g = Math.exp(-(((yy - c + 0.18 * xx * xx) / 0.045) ** 2)); if (g > 0.05 && h < 0.1) { h -= 0.05 * g; t -= 0.35 * g; } }
-        if (yy > 11.6 && yy < 13.0 && Math.abs(xx) < 0.12 + 0.5 * (yy - 11.6) / 1.4) { h = -0.05; t = 0.15; }
-        const hh = Math.max(0.03, h + 0.05);
-        P(xx, yy, zb - 0.04 + hh / 2, 0.08, 0.08, hh, shade(cl(t, 0, 1)));
+    // ---- VOXEL torso and arms: every block is placed by hand on a 0.4 grid (Minecraft-style), ridges and grooves are real blocks ----
+    const VX = 0.4, VOX = new Map(), VK = (i, j, k) => i + ',' + j + ',' + k;
+    const vput = (i, j, k, c) => VOX.set(VK(i, j, k), [i, j, k, c]);
+    const TP = [0.3, 0.55, 0.9, 0.12, 0.7];                                       // tone ladder helper
+    // torso occupancy: rounded cross-section, widening to the shoulders
+    const occ = new Set();
+    for (let iy = 14; iy <= 33; iy++) {
+      const y = iy * VX, sh = iy >= 31, hemRow = iy === 14;
+      const A = (sh ? 2.0 : torsoA(y) + 0.1) + (hemRow ? 0.4 : 0), Bz = (sh ? 0.95 : 0.9) + (hemRow ? 0.4 : 0);
+      for (let ix = -5; ix <= 5; ix++) for (let iz = -3; iz <= 3; iz++) {
+        if (Math.pow(Math.abs(ix * VX) / A, 3) + Math.pow(Math.abs(iz * VX) / Bz, 3) <= 1.0) occ.add(VK(ix, iy, iz));
       }
     }
-    for (let xx = -1.65; xx < 1.65; xx += 0.1) {                                // overhanging scalloped hem of the tunic
-      const sc = 0.5 + 0.5 * Math.cos(xx * 6.5), hh = 0.3 + 0.16 * sc;
-      P(xx, 5.95 - hh / 2 + 0.1, torsoB(5.9) + 0.18, 0.1, hh, 0.3, shade(0.35 + 0.5 * sc));
-      P(xx, 5.95 - hh + 0.1, torsoB(5.9) + 0.18, 0.1, 0.05, 0.32, CH);
+    const MP0 = [-1.55, 12.4], MP1 = [1.45, 6.0], MV = [MP1[0] - MP0[0], MP1[1] - MP0[1]], ML = Math.hypot(MV[0], MV[1]);
+    const MVx = MV[0] / ML, MVy = MV[1] / ML, MNx = -MVy, MNy = MVx;
+    const colTop = (ix, iy) => { for (let iz = 3; iz >= -3; iz--) if (occ.has(VK(ix, iy, iz))) return iz; return null; };
+    const colBot = (ix, iy) => { for (let iz = -3; iz <= 3; iz++) if (occ.has(VK(ix, iy, iz))) return iz; return null; };
+    // V neckline: carve the front block away at the top of the chest
+    for (let iy = 31; iy <= 33; iy++) for (let ix = -5; ix <= 5; ix++) {
+      const y = iy * VX, x = ix * VX;
+      if (Math.abs(x) < 0.1 + 0.5 * (y - 11.6) / 1.4 && iy >= 31) { const zt = colTop(ix, iy); if (zt !== null) occ.delete(VK(ix, iy, zt)); }
     }
-    for (let yy = 5.8; yy < 12.7; yy += 0.1) for (let xx = -1.7; xx < 1.7; xx += 0.1) {  // cloak folds down the back
-      if (Math.abs(xx) > torsoA(yy) - 0.02) continue;
-      const f = 0.5 + 0.5 * Math.sin(xx * 7 + 0.8 * Math.sin(yy * 0.7)), hh = 0.05 + 0.09 * f;
-      P(xx, yy, -(torsoB(yy) + 0.06) - hh / 2 + 0.04, 0.1, 0.1, hh, shade(0.25 + 0.6 * f));
+    for (const key of occ) {
+      const [ix, iy, iz] = key.split(',').map(Number), x = ix * VX, y = iy * VX, zt = colTop(ix, iy), zb = colBot(ix, iy);
+      const qx = -x - MP0[0], qy = y - MP0[1], al = qx * MVx + qy * MVy, di = qx * MNx + qy * MNy;
+      let t, isFront = iz === zt, isBack = iz === zb;
+      if (iy === 14) t = 0.92;                                                        // flared hem band
+      else if (isFront) {
+        t = 0.58;
+        const neck = iy >= 31 && Math.abs(x) < 0.1 + 0.5 * (y - 11.6) / 1.4 + 0.45;
+        if (neck && y > 12.2) t = 0.1;                                                // dark recess around the V
+        if (al > 0 && al < ML && Math.abs(di) < 0.3) { t = 0.86; vput(ix, iy, iz + 1, shade(0.86)); }    // mantle ridge (extra block)
+        else if (al > 0 && al < ML && Math.abs(di) < 0.55) t = 0.1;                   // engraved groove beside it
+        if ((ix === -3 && y >= 6.2 && y <= 12.0) || (ix === -4 && y >= 8.4 && y <= 12.0)) { t = 0.9; vput(ix, iy, iz + 1, shade(0.9)); }  // long hanging fold
+        else if (ix === -2 && y >= 6.6 && y <= 11.6 && !(al > 0 && al < ML && Math.abs(di) < 0.55)) t = 0.08;                           // its groove
+        for (const c of [7.2, 8.0, 8.8]) if (Math.abs(y - c + 0.18 * x * x) < 0.2 && !(al > 0 && al < ML && Math.abs(di) < 0.55) && ix > -3) t = 0.1; // stomach creases
+      } else if (isBack) t = 0.38 + 0.4 * (((ix % 2) + 2) % 2);                       // vertical cloak folds at the back
+      else t = 0.5 + 0.07 * ((((iy + iz) % 2) + 2) % 2 ? 1 : -1);                     // sides
+      vput(ix, iy, iz, shade(t));
     }
-    P(0, 12.95, 0, 3.8, 1.0, 1.5, CM);                                          // shoulders
+    // arms: tapered square-ish tubes of blocks, folds as diagonal bands of light/dark blocks, a gentle sag underneath
     for (const sd of [-1, 1]) {
-      P(sd * 4.2, 12.95, 0, 5.0, 0.8, 1.0, 0xb4bcab);                           // upper arm
-      for (let k = 0; k < 9; k++) P(sd * (2.2 + k * 0.5), 13.37, 0, 0.07, 0.04, 0.9, CD); // creases over the arm
+      for (let ix = 4; ix <= 16; ix++) {
+        const u = (ix - 4) / 12, rr = 0.88 - 0.32 * u - (sd > 0 ? 0.02 : 0);
+        for (let iy = 30; iy <= 34; iy++) for (let iz = -2; iz <= 2; iz++) {
+          const dy = (iy - 32) * VX, dz = iz * VX;
+          const sag = iy === 30 && iz === 0 && ix >= (sd < 0 ? 6 : 7) && ix <= (sd < 0 ? 12 : 10);
+          if (Math.hypot(dy, dz) > rr && !sag) continue;
+          const ang = Math.atan2(dy, dz), sIdx = Math.floor((ang / (Math.PI * 2) + 0.5) * 5 + ix * 0.3 * sd);
+          const t = [0.2, 0.62, 0.92, 0.5, 0.75][((sIdx % 5) + 5) % 5] + 0.05 * (dy > 0 ? 1 : -1);
+          vput(sd * ix, iy, iz, shade(t));
+        }
+      }
+    }
+    for (const [i, j, k, c] of VOX.values()) {
+      if (VOX.has(VK(i + 1, j, k)) && VOX.has(VK(i - 1, j, k)) && VOX.has(VK(i, j + 1, k)) && VOX.has(VK(i, j - 1, k)) && VOX.has(VK(i, j, k + 1)) && VOX.has(VK(i, j, k - 1))) continue;
+      P(i * VX, j * VX, k * VX, VX, VX, VX, c);
+    }
+    for (const sd of [-1, 1]) {
       P(sd * 7.0, 12.88, 0, 1.2, 0.66, 0.76, 0xb4bcab);                         // forearm
       P(sd * 6.45, 12.88, 0, 0.12, 0.8, 0.9, CL);                               // cuff
       P(sd * 7.55, 12.82, 0, 0.7, 0.5, 0.8, 0xcfd6c6);                          // palm
       for (let f = 0; f < 4; f++) P(sd * 8.1, 12.84, -0.3 + f * 0.2, 0.55, 0.1, 0.15, 0xcfd6c6); // fingers
       P(sd * 7.7, 12.76, 0.48, 0.4, 0.1, 0.2, 0xcfd6c6);                        // thumb
-      // sleeve: cloth hanging from the arm in a few broad, slanted folds; hem slopes from the deep drape by the body up to the wrist
-      const lamS = sd < 0 ? 1.5 : 1.9, ph = sd < 0 ? 0.4 : 2.3, sc = sd < 0 ? 1.0 : 0.82;
-      const gw = (q, p) => 1 - Math.pow(1 - (0.5 + 0.5 * Math.cos(q / lamS * Math.PI * 2 + p)), 3);
-      for (let xp = 1.75; xp < 6.4; xp += 0.1) {
-        const u = (xp - 1.75) / 4.65, hang = (0.4 + 2.5 * Math.pow(1 - u, 1.15)) * sc + 0.25 * Math.sin(u * 6 + sd * 1.3);
-        const yl = 12.55 - hang - 0.3 * gw(xp + 0.35 * hang, ph);
-        for (let yy = 12.5; yy > yl; yy -= 0.1) {
-          const dn = 12.55 - yy, q = xp + 0.35 * dn, grow = Math.min(1, dn / 0.8 + 0.2);
-          const f = gw(q, ph), fb = gw(q + 0.6, ph + 1.5), zs = 0.34 + 0.03 * dn;
-          const zf = zs + 0.3 * f * grow, zb2 = zs + 0.3 * fb * grow;
-          P(sd * xp, yy, (zf - zb2) / 2, 0.11, 0.11, zf + zb2, shade(0.06 + 0.92 * f));
-        }
-        P(sd * xp, yl, 0, 0.11, 0.07, 0.34 * 2 + 0.3, CH);                         // light lower hem edge
-      }
     }
 
     // ---- head: face at ~0.06 m cells as a relief map ----
