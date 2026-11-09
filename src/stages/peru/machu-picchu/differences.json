@@ -1,0 +1,12 @@
+[
+  { "index": 0, "title": "Terrace crops: green or golden", "kind": "color", "availability": "any", "angle": 0 },
+  { "index": 1, "title": "Sun Gate torch colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 36 },
+  { "index": 2, "title": "Llama on the front terrace", "kind": "presence", "availability": "any", "angle": 72 },
+  { "index": 3, "title": "Hut roof: thatched or open", "kind": "shape", "availability": "any", "angle": 108 },
+  { "index": 4, "title": "Trail lantern colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 144 },
+  { "index": 5, "title": "Hikers on the trail: three or two", "kind": "count", "availability": "any", "angle": 180 },
+  { "index": 6, "title": "Watchtower window colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 222 },
+  { "index": 7, "title": "Alpaca herd: four or two", "kind": "count", "availability": "any", "angle": 245 },
+  { "index": 8, "title": "Summit beacon light colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 292 },
+  { "index": 9, "title": "Forest rope bridge: present or absent", "kind": "presence", "availability": "any", "angle": 327 }
+]
