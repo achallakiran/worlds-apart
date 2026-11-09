@@ -416,7 +416,7 @@ function createStage(E) {
     }
   }
 
-  function updateLighting(world, { glow = 0 } = {}) {
+  function updateLighting(world, phase, { glow = 0 } = {}) {
     const u = world.userData;
     for (const l of u.petraLights || []) l.m.material.color.set(l.day).lerp(new Color(l.night), glow);
     for (const l of u.localLights || []) l.intensity = glow * (l.userData.nightPower || 24);

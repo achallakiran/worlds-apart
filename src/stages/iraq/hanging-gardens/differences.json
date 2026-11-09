@@ -1,0 +1,12 @@
+[
+  {"index": 0, "title": "Date palm fruit: golden or red", "kind": "color", "availability": "any", "angle": 0},
+  {"index": 1, "title": "Quay lantern colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 36},
+  {"index": 2, "title": "Moored boat on the river", "kind": "presence", "availability": "any", "angle": 72},
+  {"index": 3, "title": "Winged bull statue by the pool", "kind": "presence", "availability": "any", "angle": 108},
+  {"index": 4, "title": "Fountain basin glow", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 144},
+  {"index": 5, "title": "Gardeners in the beds: three or two", "kind": "count", "availability": "any", "angle": 180},
+  {"index": 6, "title": "Guard tower window colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 222},
+  {"index": 7, "title": "Flower bed: pink or yellow", "kind": "color", "availability": "any", "angle": 255},
+  {"index": 8, "title": "Watch beacon colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 295},
+  {"index": 9, "title": "Terrace waterfall: flowing or dry", "kind": "presence", "availability": "any", "angle": 330}
+]

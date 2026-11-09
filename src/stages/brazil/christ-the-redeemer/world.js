@@ -611,7 +611,7 @@ const HEAD = {X0:-1.2,DX:0.04,YT:16.1,DY:0.04,zb:[0.50,0.50,0.50,0.50,0.50,0.51,
   }
   const smoothStep = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 
-  function updateLighting(world, { glow = 0 } = {}) {
+  function updateLighting(world, phase, { glow = 0 } = {}) {
     const u = world.userData;
     for (const l of u.wallLights || []) l.m.material.color.set(l.day).lerp(new Color(l.night), glow);
     for (const l of u.localLights || []) l.intensity = glow * (l.userData.nightPower || 24);
