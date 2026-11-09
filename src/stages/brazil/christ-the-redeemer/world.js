@@ -290,16 +290,19 @@ function createStage(E) {
       P(sd * 7.7, 12.76, 0.48, 0.4, 0.1, 0.2, 0xcfd6c6);                        // thumb
       // arm: a tapered cylinder (wide at the shoulder, narrower at the wrist) wrapped in robe, built from 0.1 blocks snapped to a grid;
       // folds spiral along the arm, with a little sag underneath
-      const nf = sd < 0 ? 5 : 4, kk = sd < 0 ? 0.9 : -0.7, ph0 = sd < 0 ? 0.3 : 1.7, sagA = sd < 0 ? 0.28 : 0.16, sn1 = (v) => Math.round(v / 0.06) * 0.06;
+      const nf = sd < 0 ? 4 : 3, ph0 = sd < 0 ? 0.4 : 2.0, sagA = sd < 0 ? 0.55 : 0.42, sn1 = (v) => Math.round(v / 0.06) * 0.06;
       for (let xp = 1.6; xp <= 6.45; xp += 0.06) {
         const u = (xp - 1.6) / 4.85, R = 0.72 - 0.27 * Math.pow(u, 0.8), yc = 12.95 - 0.025 * (xp - 1.6);
         P(sd * xp, yc, 0, 0.07, 2 * R * 0.62, 2 * R * 0.62, 0xb4bcab);
+        const wob = 0.95 * Math.sin(xp * 1.5 + ph0 + sd) + 0.3 * Math.sin(xp * 3.3 + ph0 * 2);   // folds wander up and down as they run along the arm
+        const shape = Math.sin(Math.PI * Math.min(1, u * 1.15)), scal = 0.55 + 0.45 * Math.cos(xp * 2.4 + ph0 * 2); // underside drape: deepest near the elbow, scalloped edge
         const N = Math.ceil(2 * Math.PI * R / 0.06);
         for (let i = 0; i < N; i++) {
           const th = i / N * Math.PI * 2, c = Math.cos(th), sn = Math.sin(th);
-          const w2 = 0.5 + 0.5 * Math.cos(nf * 3 * th + kk * xp * 3 + ph0), w = 0.5 + 0.5 * Math.cos(nf * th + kk * xp * 2 + ph0 + 0.5 * Math.sin(xp * 1.3)), g = 1 - Math.pow(1 - w, 3);
-          const sag = sn < 0 ? sagA * Math.sin(Math.PI * u) * sn * sn : 0, r = R * (0.9 + 0.16 * g + 0.025 * w2 + sag);
-          P(sd * xp, sn1(yc + r * sn), sn1(r * c * 0.96), 0.07, 0.07, 0.07, shade(0.08 + 0.75 * g + 0.12 * sn + 0.12 * (w2 - 0.5)));
+          const w = 0.5 + 0.5 * Math.cos(nf * th + wob), g = 1 - Math.pow(1 - w, 3);
+          const w2 = 0.5 + 0.5 * Math.cos(nf * 3 * th + wob * 2 + 1.0);
+          const sag = sn < 0 ? sagA * shape * Math.pow(-sn, 1.3) * scal : 0, r = R * (0.9 + 0.17 * g + 0.025 * w2 + sag);
+          P(sd * xp, sn1(yc + r * sn), sn1(r * c * 0.96), 0.07, 0.07, 0.07, shade(0.08 + 0.75 * g + 0.12 * sn + 0.1 * (w2 - 0.5)));
         }
       }
     }
