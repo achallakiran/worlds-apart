@@ -1,0 +1,12 @@
+[
+  { "index": 0, "title": "Cenote water: turquoise or emerald", "kind": "color", "availability": "any", "angle": 15 },
+  { "index": 1, "title": "Plaza torch colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 41 },
+  { "index": 2, "title": "Market stall lantern colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 73 },
+  { "index": 3, "title": "Iguana on the rock: present or absent", "kind": "presence", "availability": "any", "angle": 107 },
+  { "index": 4, "title": "Warriors' columns: eight or six", "kind": "count", "availability": "any", "angle": 139 },
+  { "index": 5, "title": "Ceiba tree: leafy or bare", "kind": "shape", "availability": "any", "angle": 180 },
+  { "index": 6, "title": "Caracol window light colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 217 },
+  { "index": 7, "title": "Parrots on the branch: three or two", "kind": "count", "availability": "any", "angle": 255 },
+  { "index": 8, "title": "Skull platform brazier colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 281 },
+  { "index": 9, "title": "Ball court hoop: stone or gold", "kind": "color", "availability": "any", "angle": 308 }
+]
