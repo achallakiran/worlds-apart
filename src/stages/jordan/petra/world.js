@@ -1,9 +1,8 @@
 /*
  * Jordan — "Rose City of Petra" (jordan-petra-treasury)
  *
- * Readable stage source. During the legacy-bundle period this file is injected into
- * the release bundle by tools/stages/inject_petra.py; the refactor will move it into
- * the stage package contract (stage.json / world.ts / differences.json / ...).
+ * Stage package: world.js (this file) + stage.json (metadata) + differences.json (catalogue)
+ * + music.mp3. tools/stages/build_stages.py injects every package into the release bundle.
  *
  * Rules kept identical to the other sceneries:
  *  - paired panels built from the same code, variant flag decides A/B;
@@ -13,7 +12,7 @@
  *
  * Coordinates: Y up, 1 unit = 1 voxel. Treasury faces +Z (towards the default camera).
  */
-function createPetraStage(E) {
+function createStage(E) {
   const { Mesh, BasicMaterial, PointLight, Color, Vector3, hash, pathStep, inWindow } = E;
 
   const Y0 = 0.2; // plaza floor height
@@ -423,23 +422,5 @@ function createPetraStage(E) {
     for (const l of u.localLights || []) l.intensity = glow * (l.userData.nightPower || 24);
   }
 
-  return {
-    id: 'jordan-petra-treasury',
-    countryId: 'jordan',
-    builder: 11,
-    profile: 11,
-    baseSky: 0x9fcde8,
-    build,
-    animate,
-    height,
-    water: () => false,
-    updateLighting,
-    pandaPosition: [23, 15],
-    discoveryExtras: false,
-    extraPositions: [],
-    lampPosition: (i) => [9.2, 0.15, 3 + i * 2.8],
-    starCount: 70,
-    roundMoon: true,
-    atmosphere: { waterSpots: [], cloudCount: 6, cloudAltitude: 27, birdAltitude: 29 },
-  };
+  return { build, animate, height, water: () => false, updateLighting };
 }

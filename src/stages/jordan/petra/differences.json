@@ -1,0 +1,12 @@
+[
+  { "index": 0, "title": "Treasury rooftop urn", "kind": "presence", "availability": "day" },
+  { "index": 1, "title": "Treasury doorway", "kind": "shape", "availability": "day" },
+  { "index": 2, "title": "Royal tomb arches: two or three", "kind": "count", "availability": "day" },
+  { "index": 3, "title": "Theatre shade canopy", "kind": "presence", "availability": "day" },
+  { "index": 4, "title": "Plaza horse or camel", "kind": "shape", "availability": "day" },
+  { "index": 5, "title": "Guide open or folded parasol", "kind": "shape", "availability": "day" },
+  { "index": 6, "title": "Market stall awning colour", "kind": "color", "availability": "day" },
+  { "index": 7, "title": "Ravens on the sand: two or five", "kind": "count", "availability": "day" },
+  { "index": 8, "title": "Treasury door lanterns colour", "kind": "color", "availability": "night", "hintPhase": 0.86 },
+  { "index": 9, "title": "Candle lanterns along the path", "kind": "count", "availability": "night", "hintPhase": 0.86 }
+]

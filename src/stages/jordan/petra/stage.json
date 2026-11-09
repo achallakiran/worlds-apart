@@ -1,0 +1,20 @@
+{
+  "id": "jordan-petra-treasury",
+  "name": "Rose City of Petra",
+  "builder": 11,
+  "profile": 11,
+  "order": 110,
+  "baseSky": "0x9fcde8",
+  "pandaPosition": [23, 15],
+  "lamps": { "from": [9.2, 0.15, 3], "step": [0, 0, 2.8] },
+  "starCount": 70,
+  "roundMoon": true,
+  "atmosphere": { "waterSpots": [], "cloudCount": 6, "cloudAltitude": 27, "birdAltitude": 29 },
+  "opening": {
+    "landscape": { "yaw": 0.5, "phi": 1.04, "zoom": 1.45, "tx": -1, "tz": -1, "ty": 7.5 },
+    "portrait": { "yaw": 0.46, "phi": 1.02, "zoom": 1.4, "tx": -1, "tz": -1, "ty": 7.5 }
+  },
+  "country": { "id": "jordan", "name": "Jordan", "flag": "\\u{1F1EF}\\u{1F1F4}", "threshold": 0 },
+  "music": "music.mp3",
+  "theme": "new-seven-wonders"
+}

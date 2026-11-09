@@ -1,0 +1,12 @@
+[
+  { "index": 0, "title": "Beacon smoke signal", "kind": "presence", "availability": "day" },
+  { "index": 1, "title": "Watchtower flag colour", "kind": "color", "availability": "day" },
+  { "index": 2, "title": "Patrol soldier spear or shield", "kind": "shape", "availability": "day" },
+  { "index": 3, "title": "Wall breach", "kind": "presence", "availability": "day" },
+  { "index": 4, "title": "Hillside pavilion eaves", "kind": "shape", "availability": "day" },
+  { "index": 5, "title": "Maple tree colour", "kind": "color", "availability": "day" },
+  { "index": 6, "title": "Pack mule baskets", "kind": "shape", "availability": "day" },
+  { "index": 7, "title": "Gate stone lions: two or one", "kind": "count", "availability": "day" },
+  { "index": 8, "title": "Wall torches: six or three", "kind": "count", "availability": "night", "hintPhase": 0.86 },
+  { "index": 9, "title": "Beacon fire colour", "kind": "color", "availability": "night", "hintPhase": 0.86 }
+]

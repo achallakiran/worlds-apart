@@ -1,0 +1,52 @@
+{
+  "id": "china-great-wall-ridge",
+  "name": "Great Wall of China",
+  "countryId": "china",
+  "builder": 12,
+  "profile": 0,
+  "order": 120,
+  "baseSky": "0xa9d4ea",
+  "pandaPosition": [
+    10,
+    16
+  ],
+  "lamps": {
+    "from": [
+      3,
+      0.15,
+      10
+    ],
+    "step": [
+      1.9,
+      0,
+      1.1
+    ]
+  },
+  "starCount": 60,
+  "roundMoon": true,
+  "atmosphere": {
+    "waterSpots": [],
+    "cloudCount": 8,
+    "cloudAltitude": 25,
+    "birdAltitude": 22
+  },
+  "opening": {
+    "landscape": {
+      "yaw": 0.5,
+      "phi": 1.04,
+      "zoom": 1.12,
+      "tx": 0,
+      "tz": -2,
+      "ty": 5
+    },
+    "portrait": {
+      "yaw": 0.46,
+      "phi": 1.02,
+      "zoom": 1.05,
+      "tx": 0,
+      "tz": -2,
+      "ty": 5
+    }
+  },
+  "theme": "new-seven-wonders"
+}
