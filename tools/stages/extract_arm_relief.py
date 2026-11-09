@@ -1,5 +1,5 @@
 # Trace the sleeves of the reference photo into per-cell tone + relief grids, and write them into world.js (between ARMDATA markers).
-# usage: python3 -I extract_arm_relief.py REFERENCE.jpg world.js
+# usage: python3 -I extract_arm_relief.py FULL_STATUE.jpg world.js [FACE_CLOSEUP.jpg]
 import sys, numpy as np
 from PIL import Image
 from scipy import ndimage as ndi
@@ -56,7 +56,33 @@ for j in range(nyb):
     tr.append(''.join('.' if not m[j, i] else chr(97 + int(np.clip((tone[j, i] - lo) / (hi - lo), 0, 0.999) * 26)) for i in range(nxb)))
     rr.append(''.join('.' if not m[j, i] else chr(97 + int(np.clip(13 + 12 * rel[j, i] / (2 * sdv), 0, 25))) for i in range(nxb)))
 while tr and set(tr[-1]) == {'.'}: tr.pop(); rr.pop()
-js += "const BODY = {X0:%g,DX:%g,YT:%g,DY:%g,\n t:[%s],\n r:[%s]};/*ENDARMDATA*/" % (BX0, DX, YTB, DY, ','.join("'%s'" % x for x in tr), ','.join("'%s'" % x for x in rr))
+js += "const BODY = {X0:%g,DX:%g,YT:%g,DY:%g,\n t:[%s],\n r:[%s]};\n" % (BX0, DX, YTB, DY, ','.join("'%s'" % x for x in tr), ','.join("'%s'" % x for x in rr))
+# ---- head (face + hair) from a front close-up: stone vs sky separated by colour saturation
+if len(sys.argv) > 3:
+    fim = np.asarray(Image.open(sys.argv[3]).convert('RGB')).astype(float)
+    sat = (fim.max(2) - fim.min(2)) / (fim.max(2) + 1e-6)
+    fm = ndi.binary_fill_holes(ndi.binary_closing(sat < 0.28, iterations=2))
+    lab2, n2 = ndi.label(fm); fm = lab2 == (1 + int(np.argmax(ndi.sum(fm, lab2, range(1, n2 + 1)))))
+    Lf = fim.mean(2); Ls = ndi.gaussian_filter(Lf, 2.0); Lr = Ls - ndi.gaussian_filter(Lf, 18.0)
+    SCF, CXF, DXF = 140.0, 220.0, 0.04; YTF = 16.1; HX0 = -1.2
+    ptop = float(np.where(fm.sum(1) > 15)[0].min())
+    nxf = int(round(2.4 / DXF)) + 1; nyf = int(round((YTF - 13.15) / DXF)) + 1
+    tone = np.full((nyf, nxf), -1.0); rel = np.zeros((nyf, nxf))
+    for j in range(nyf):
+        y = YTF - j * DXF; py = ptop + (YTF - y) * SCF
+        for i in range(nxf):
+            X = HX0 + i * DXF; px = CXF - X * SCF
+            if ndi.map_coordinates(fm.astype(float), [[py], [px]], order=1)[0] > 0.5:
+                tone[j, i] = ndi.map_coordinates(Ls, [[py], [px]], order=1)[0]; rel[j, i] = ndi.map_coordinates(Lr, [[py], [px]], order=1)[0]
+    m = tone >= 0
+    lo, hi = np.percentile(tone[m], 2), np.percentile(tone[m], 98); sdv = rel[m].std() + 1e-6
+    tr, rr = [], []
+    for j in range(nyf):
+        tr.append(''.join('.' if not m[j, i] else chr(97 + int(np.clip((tone[j, i] - lo) / (hi - lo), 0, 0.999) * 26)) for i in range(nxf)))
+        rr.append(''.join('.' if not m[j, i] else chr(97 + int(np.clip(13 + 12 * rel[j, i] / (2 * sdv), 0, 25))) for i in range(nxf)))
+    js += "const HEAD = {X0:%g,DX:%g,YT:%g,DY:%g,\n t:[%s],\n r:[%s]};\n" % (HX0, DXF, YTF, DXF, ','.join("'%s'" % x for x in tr), ','.join("'%s'" % x for x in rr))
+    print('head rows', nyf, 'cols', nxf, 'ptop', ptop)
+js += "/*ENDARMDATA*/"
 print('body rows', len(tr), 'cols', nxb)
 s = open(sys.argv[2]).read()
 if '/*ARMDATA*/' in s:
