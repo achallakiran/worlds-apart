@@ -5285,7 +5285,7 @@ function createStage(E) {
     // at night, so folds read as carved grooves day and night). SK scales everything.
     const S = (x, y, z, sx, sy, sz, day, night) => lamp(z * SK, Y0 + y * SK, x * SK, sz * SK, sy * SK, sx * SK, day, night);
     const G = (x, y, z, sx, sy, sz, c) => g(z * SK, Y0 + y * SK, x * SK, sz * SK, sy * SK, sx * SK, c);
-    const BASE = 0xaab2a4, STONE_N = 0xfff1cf, RIDGE = 0xd7dccf, LIGHT = 0xe3e7dc, GROOVE = 0x7b8378, SHADOW = 0x656d66, DRAPE = 0xa5ad9f, HAIR = 0x9aa294, HAIR_N = 0xf0d699;
+    const BASE = 0xaab2a4, STONE_N = 0xfff1cf, RIDGE = 0xd3dce3, LIGHT = 0xe6edf2, GROOVE = 0x778088, SHADOW = 0x626b72, DRAPE = 0xa5ad9f, HAIR = 0x9aa294, HAIR_N = 0xf0d699;
 
     // ---- long pleated skirt (deep vertical pleats all round) and tunic, in tiers that flare toward the hem ----
     const TIERS = [];
@@ -5301,8 +5301,8 @@ function createStage(E) {
         for (let k = -3; k <= 3; k++) G(k * half / 3.4, (lo + hi) / 2, -dh - 0.03, 0.26, hi - lo - 0.04, 0.07, k % 2 ? RIDGE : GROOVE);
       }
     }
-    G(0, 0.1, 0, 4.5, 0.22, 2.6, 0xb7beb0);                                // hem band
-    for (const s of [-1, 1]) G(s * 0.7, 0.12, 1.3, 0.8, 0.24, 0.5, 0xb2b9ab); // feet
+    G(0, 0.1, 0, 4.5, 0.22, 2.6, 0xb5bfc6);                                // hem band
+    for (const s of [-1, 1]) G(s * 0.7, 0.12, 1.3, 0.8, 0.24, 0.5, 0xb0bac1); // feet
 
     // ---- mantle: diagonal drape across the chest, long hanging fold, V neckline ----
     for (let t = 0; t < 9; t++) {
@@ -5326,8 +5326,8 @@ function createStage(E) {
       S(s * 4.5, 12.95, 0, 5.4, 0.8, 1.0, 0xb3baaa, STONE_N);               // upper arm
       S(s * 6.85, 12.85, 0, 1.4, 0.7, 0.75, 0xb3baaa, STONE_N);            // forearm
       S(s * 7.55, 12.8, 0, 0.7, 0.5, 0.8, 0xc7cdbe, STONE_N);              // palm
-      for (let f = 0; f < 4; f++) G(s * 8.05, 12.83, -0.3 + f * 0.2, 0.5, 0.1, 0.15, 0xc3c9ba);  // fingers
-      G(s * 7.7, 12.76, 0.48, 0.4, 0.1, 0.2, 0xc3c9ba);                    // thumb
+      for (let f = 0; f < 4; f++) G(s * 8.05, 12.83, -0.3 + f * 0.2, 0.5, 0.1, 0.15, 0xc2cbd2);  // fingers
+      G(s * 7.7, 12.76, 0.48, 0.4, 0.1, 0.2, 0xc2cbd2);                    // thumb
       for (let i = 0; i < 13; i++) {                                         // hanging sleeve as columns
         const u = i / 12, x = 1.85 + u * 5.2, w = 0.47;
         const hang = 0.5 + 3.5 * Math.pow(1 - u, 0.85) + (i % 2 ? -0.18 : 0.12);
@@ -5339,29 +5339,52 @@ function createStage(E) {
       G(s * 1.9, 11.9, 0.62, 0.1, 1.4, 0.05, SHADOW);
     }
 
-    // ---- head: hair falling to the shoulders, long nose, heavy lids, moustache and pointed beard ----
-    S(0, 13.8, 0, 0.95, 0.7, 0.95, 0xb5bcae, STONE_N);                     // neck
-    G(0, 13.5, 0.5, 0.9, 0.12, 0.06, SHADOW);                              // under-chin shadow / collar
-    S(0, 15.0, 0, 1.3, 1.6, 1.15, 0xc3cabc, 0xfff6e0);                     // head
-    S(0, 15.55, -0.1, 1.55, 1.1, 1.4, HAIR, HAIR_N);                       // crown of hair
-    S(0, 14.7, -0.62, 1.55, 2.4, 0.5, HAIR, HAIR_N);                       // hair behind
-    for (const s of [-1, 1]) {
-      S(s * 0.78, 14.4, -0.05, 0.36, 2.9, 1.2, HAIR, HAIR_N);              // locks at the sides, down to the shoulders
-      for (const dx of [-0.1, 0.1]) G(s * 0.78 + dx, 14.4, 0.57, 0.05, 2.8, 0.04, GROOVE);
-      for (const dy of [0, 0.4, -0.4]) G(s * 0.97, 14.4 + dy, -0.05, 0.05, 2.6, 0.5, GROOVE);
+    // ---- head: modelled at ~0.1 m cells as a relief map (brow, deep-set lids, long nose, moustache, lips, pointed beard) ----
+    const mixC = (c1, c2, t) => { const r = (c1 >> 16 & 255) + ((c2 >> 16 & 255) - (c1 >> 16 & 255)) * t, gg = (c1 >> 8 & 255) + ((c2 >> 8 & 255) - (c1 >> 8 & 255)) * t, bb = (c1 & 255) + ((c2 & 255) - (c1 & 255)) * t; return (r | 0) << 16 | (gg | 0) << 8 | (bb | 0); };
+    S(0, 13.8, 0, 0.95, 0.7, 0.95, 0xb5bcae, STONE_N);                      // neck
+    G(0, 13.45, 0.42, 1.0, 0.1, 0.4, SHADOW);                               // shadow under the chin
+    S(0, 15.15, 0, 1.25, 1.4, 1.15, 0xc3cabc, 0xfff6e0);                    // upper head (y 14.45–15.85)
+    S(0, 14.2, 0.0, 0.95, 0.5, 1.0, 0xbec5b7, 0xfff1d6);                    // jaw
+    S(0, 13.8, -0.05, 0.6, 0.3, 0.8, 0xb9c0b2, 0xf6e2b4);                   // chin
+    S(0, 15.7, -0.12, 1.6, 0.7, 1.45, HAIR, HAIR_N);                        // crown of hair
+    S(0, 14.7, -0.64, 1.6, 2.5, 0.5, HAIR, HAIR_N);                         // hair behind
+    for (const s of [-1, 1]) S(s * 0.82, 14.45, -0.02, 0.42, 2.8, 1.25, HAIR, HAIR_N); // locks falling past the face to the shoulders
+    const zf = (y) => (y > 14.45 ? 0.575 : y > 13.95 ? 0.5 : 0.4);          // face plane depth per row
+    const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    for (let yy = 13.75; yy < 15.78; yy += 0.1) {
+      const v = yy - 14.95;                                                  // eyes sit at v = +0.3
+      const half = v >= -0.35 ? 0.6 : 0.6 - (-0.35 - v) * 0.44;             // face half-width; beard tapers to a point
+      for (let xx = -0.6; xx <= 0.601; xx += 0.1) {
+        const ax = Math.abs(xx);
+        if (ax > half + 0.001) continue;
+        let d = 0.04 + 0.1 * (1 - (xx / 0.64) ** 2), col = null;
+        if (v > 0.45) d += 0.03;                                             // forehead
+        if (v > 0.38 && v < 0.52 && ax > 0.08 && ax < 0.52) d += 0.1;        // brow ridge
+        if (v > 0.2 && v < 0.38 && ax > 0.12 && ax < 0.48) { d -= 0.08; if (v > 0.27 && ax > 0.15 && ax < 0.44) col = 0x40463f; } // deep-set eye + heavy lid
+        if (ax < 0.1 && v > -0.2 && v < 0.42) d += 0.24;                     // long nose bridge
+        if (ax < 0.15 && v > -0.24 && v < -0.1) { d += 0.32; if (ax > 0.09 && v < -0.14) col = 0x59605a; } // nose tip and nostrils
+        if (ax > 0.22 && ax < 0.5 && v > -0.28 && v < 0.12) d += 0.05;       // cheekbones
+        if (v > -0.46 && v < -0.28 && ax < 0.42 - 0.3 * Math.max(0, ax - 0.2)) d += 0.1; // moustache
+        if (v > -0.51 && v < -0.46 && ax < 0.17) { d -= 0.06; col = 0x565d56; } // mouth line
+        if (v > -0.58 && v <= -0.51 && ax < 0.15) d += 0.05;                 // lower lip
+        if (v <= -0.58) d += 0.12 + (Math.round(xx * 10) % 2 ? 0.02 : 0);    // beard with strand ridges
+        d = cl(d, 0.02, 0.5);
+        const t = cl(d / 0.42, 0, 1);
+        G(xx, yy, zf(yy) + d / 2, 0.1, 0.1, d, col !== null ? col : mixC(0x97a2a8, 0xeaf1f5, t));
+      }
     }
-    for (let k = -3; k <= 3; k++) G(k * 0.2, 15.5, -0.6, 0.05, 1.8, 0.05, GROOVE); // strands down the back
-    G(0, 16.05, 0.2, 0.06, 0.1, 0.9, SHADOW);                              // centre parting
-    G(0, 15.45, 0.63, 1.1, 0.1, 0.1, GROOVE);                              // brow
-    for (const s of [-1, 1]) {
-      G(s * 0.3, 15.2, 0.62, 0.3, 0.14, 0.08, 0x4a504a);                   // eye / heavy lid
-      G(s * 0.3, 15.33, 0.64, 0.34, 0.05, 0.06, SHADOW);
+    for (const s of [-1, 1]) {                                               // hair strands down both sides, widening toward the shoulders
+      for (let k = 0; k < 6; k++) {
+        const wob = 0.02 * Math.sin(k * 1.7);
+        G(s * (0.66 + 0.1 * k + wob), 14.45, 0.63, 0.03, 2.7, 0.03, k % 2 ? 0x858e96 : 0xaab4bb);
+      }
+      for (let k = 0; k < 4; k++) G(s * 1.045, 14.5, 0.1 - 0.28 * k, 0.03, 2.7, 0.2, k % 2 ? 0x858e96 : 0x9ba5ac);
     }
-    G(0, 14.85, 0.72, 0.2, 0.85, 0.24, 0xd0d6c8);                          // long nose
-    G(0, 14.45, 0.66, 0.8, 0.14, 0.12, 0xa3ab9e);                          // moustache
-    G(0, 14.32, 0.64, 0.4, 0.06, 0.06, SHADOW);                            // mouth
-    S(0, 13.95, 0.58, 0.8, 0.6, 0.3, 0xb7beb0, 0xf2dca6);                  // beard
-    G(0, 13.62, 0.66, 0.4, 0.3, 0.2, 0xb3baa9);                            // pointed beard tip
+    G(0, 15.9, 0.6, 1.28, 0.12, 0.06, 0xa3adb4);                                // hairline across the forehead
+    for (const xx of [-0.5, -0.3, -0.12, 0.12, 0.3, 0.5]) G(xx, 15.8, 0.61, 0.04, 0.16, 0.04, 0x858e96);
+    for (const xx of [-0.75, -0.55, -0.35, -0.18, 0.18, 0.35, 0.55, 0.75]) G(xx, 16.06, -0.12, 0.04, 0.03, 1.3, 0x858e96); // strands over the crown
+    G(0, 16.065, 0.06, 0.06, 0.03, 1.35, 0x687078);                         // centre parting
+    for (let k = -4; k <= 4; k++) G(k * 0.17, 14.95, -0.92, 0.05, 2.4, 0.04, k % 2 ? 0x858e96 : 0x778088); // strands down the back
 
     // floodlights and beams at the foot of the pedestal
     for (const [sx, sz] of [[5.4, 5.4], [-5.4, 5.4], [5.4, -5.4], [-5.4, -5.4]]) {
