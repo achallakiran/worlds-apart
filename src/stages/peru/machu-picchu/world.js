@@ -211,7 +211,9 @@ function createStage(E) {
       g(cx - w / 2, y + hgt / 2, cz, t, hgt, d, c); g(cx + w / 2, y + hgt / 2, cz, t, hgt, d, c);
       if (roof) { g(cx, y + hgt + 0.25, cz, w + 0.5, 0.35, d + 0.5, THATCH); g(cx, y + hgt + 0.6, cz, w - 0.2, 0.35, d - 0.2, 0x8a6b3d); g(cx, y + hgt + 0.9, cz, w - 1.0, 0.3, d - 0.9, 0x7a5c32); }
       else { g(cx, y + hgt + 0.45, cz - d / 2, w - 0.8, 0.9, t, c); g(cx, y + hgt + 0.9, cz - d / 2, w - 1.8, 0.7, t, c); }
-      if (hash(cx, cz + 4) > 0.5) lamp(cx - w / 2 - 0.02, y + hgt * 0.55, cz, 0.05, 0.45, 0.4, 0x2a2a28, 0xffc468);
+      if (!roof) lamp(cx, y + 0.12, cz, w - 0.9, 0.08, d - 0.9, 0x6f6c62, hash(cx + 1, cz) > 0.5 ? 0xffa83a : 0xffcf6a);   // hearth glow on the floor (seen from above)
+      lamp(cx + w * 0.36, y + hgt * 0.4, cz + d / 2 + 0.2, w * 0.3, hgt * 0.7, 0.1, 0x2a2a28, 0xffc468);                        // lit doorway (front face)
+      lamp(cx + w / 2 + 0.2, y + hgt * 0.62, cz, 0.1, 0.6, 0.55, 0x2a2a28, hash(cx, cz + 4) > 0.5 ? 0xffb85a : 0xffd98a);       // lit window (side face)
     };
     const ROWS = [];
     for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) ROWS.push([-14 + c * 3.4 + (r % 2) * 0.6, -1.5 + r * 3.4, 2.6, 2.3, 1.5 + hash(c, r) * 0.5, hash(c + 3, r) > 0.78]);
@@ -223,6 +225,21 @@ function createStage(E) {
     for (let k = 0; k < 9; k++) { const a = -0.6 + k * 0.22; g(14.6 + 3.4 * Math.cos(a), PL + 0.8, -4.4 + 3.4 * Math.sin(a) * 0.8, 0.5, 1.6, 0.5, pick(WALL, k, 3)); }
     // trail: lawn to the Sun Gate and to the left terraces
     path(8, 8, 17, 12, 1.2); path(0, 9, -16, 11.8, 1.2); path(-3, 4, -16, 0, 1.0);
+    // lantern posts along the trails, braziers at the lawn corners (all glow at night)
+    for (const [x1, z1, x2, z2] of [[8, 8, 17, 12], [0, 9, -16, 11.8], [-3, 4, -16, 0]]) {
+      const n = Math.floor(Math.hypot(x2 - x1, z2 - z1) / 2.6);
+      for (let k = 1; k < n; k++) {
+        const x = x1 + (x2 - x1) * k / n + 0.9, z = z1 + (z2 - z1) * k / n - 0.9;
+        if (Object.values(D).some(([kx, kz]) => Math.hypot(x - kx, z - kz) < 2.8)) continue;
+        const y = height(x, z); g(x, y + 0.5, z, 0.1, 1.0, 0.1, 0x3a2f27); lamp(x, y + 1.15, z, 0.26, 0.3, 0.26, 0xe8dcb8, 0xffd27a);
+      }
+    }
+    for (const [x, z] of [[0, -1], [9, -1], [0, 8], [9, 8]]) {
+      const y = height(x, z); g(x, y + 0.4, z, 0.7, 0.8, 0.7, 0x6b6a60); lamp(x, y + 0.95, z, 0.5, 0.35, 0.5, 0xc9803a, 0xff9a3a);
+      U.beams.push({ m: lamp(x, y + 1.3, z, 1.5, 1.6, 1.5, 0xffb060, 0xffb060, { alpha: 0 }), alpha: 0.2 });
+    }
+    // summit glow: a soft column above Huayna Picchu
+    U.beams.push({ m: lamp(PEAKS[0].cx, PEAKS[0].top + 9, PEAKS[0].cz, 0.8, 16, 0.8, 0xfff4c0, 0xfff4c0, { alpha: 0 }), alpha: 0.28 });
     // Sun Gate: two pillars and a lintel
     {
       const gy = height(17, 12.4);
@@ -328,7 +345,7 @@ function createStage(E) {
     for (const i of [1, 4, 6, 8]) { const diff = U.diffs[i]; diff.nightOnly = true; diff.hintPhase = 0.86; diff.g.userData.motion = true; }
 
     U.localLights = [];
-    for (const [x, y, z, color, power] of [[2, 11, 4, 0xffd9a0, 40], [-11, 8, 4, 0xffc27a, 26], [14, 8, 6, 0xffc27a, 24]]) {
+    for (const [x, y, z, color, power] of [[4, 10, 3, 0xffd9a0, 90], [-9, 9, 3, 0xffc27a, 70], [13, 9, 5, 0xffc27a, 60], [4, 8, 12, 0xffc27a, 55], [-12, 8, 11, 0xffd9a0, 45], [6, 30, -17, 0xfff0c0, 36]]) {
       const l = new PointLight(color, 0, 24, 1.5);
       l.position.set(x, y, z); l.userData.nightPower = power; world.add(l); U.localLights.push(l);
     }
