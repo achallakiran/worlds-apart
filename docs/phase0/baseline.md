@@ -38,14 +38,35 @@ Notes: builder indexes 5 and 6 and music indexes 5 are unused (gaps, likely remo
 - `unlocked` is currently forced to all countries on load (`ia`), so thresholds are not enforced. Record as current behavior, decide separately whether this is intended.
 - Saves are per-origin: nothing transfers from the ChatGPT host or the offline file to GitHub Pages.
 
-## Differences (extracted labels; see `difference-labels.extracted.json`)
-Extractor is a regex over minified code, so counts below are **not final**:
-- China 6, India 6, Egypt 6, Japan 7 (indexes 6 and 7 missed), Italy 11 (two entries share index 9), France 10, Korea 10, Mongolia 10, Taiwan 10.
-- Save schema allows 10 slots per scenery. China has `discoveryExtras` with 4 extra positions, which probably supplies slots 6 to 9. Needs confirmation.
+## Differences
+- **Every stage has exactly 10 discovery slots** (HUD shows 10 dots in all nine stages; confirmed by headless capture). This supersedes the earlier regex count; the regex missed calls in several builders.
+- Labels recovered so far are in `difference-labels.extracted.json` and are **incomplete** (China, India and Egypt list 6; Japan 7; Italy has a duplicate index 9). China also has `discoveryExtras` with 4 extra positions, which likely supply slots 6 to 9. Full per-slot inventory is a Phase 4/5 task per stage.
 - Mongolia (reported indistinguishable differences): ger entrance, saddle fringe, raised whip, eagle wings, banners, grazing horses, parasol, covered cart, illuminated arches, lantern pair. Several are small or binary and need human visual review in Phase 5.
+
+## Captures and measurements (this environment)
+Headless Chrome with software WebGL (SwiftShader), 844x390 landscape, fresh load per stage, about 6 s after entering the stage. Script: `tools/phase0/capture_baseline.py`. Images and raw numbers: `docs/phase0/captures/`.
+- Load to interactive title: about 4.6 s (software rendering, not representative).
+- Console: no page errors; no remote requests at runtime. One Three.js warning: PCFSoftShadowMap has been removed, PCFShadowMap used instead.
+- Draw calls per frame (both panels combined):
+
+| Stage | Draw calls |
+|---|---|
+| China | 1578 |
+| Japan | 1574 |
+| India | 1256 |
+| Egypt | 1623 |
+| Italy | 1806 |
+| France | 1821 |
+| Korea | 1258 |
+| **Mongolia** | **3237** |
+| **Taiwan** | **3636** |
+
+- Mongolia and Taiwan draw about twice as much as the others. Treat as a performance finding to compare after refactor, and a candidate for later batching (separate from the refactor).
+- Frame rate (about 1 FPS) is a software-rendering artifact and is **not** a usable baseline. Real FPS must be measured on a GPU device.
+- Screenshots are single captures at an unpinned time of day; fixed camera/time/seed captures still need to be added once the new build exposes controls for them.
 
 ## Behaviors still unverified
 Live Pages state; per-stage gameplay; day/night visibility per difference; audio source (procedural vs embedded) and track list; hint recharge in practice; title globe interactions; real-device (iPhone Safari) touch and audio.
 
 ## Not yet done in Phase 0
-Fixed-view screenshots; startup, frame time, draw calls and resource counts; defect log from playing each stage; release tag.
+Real-device FPS and startup; fixed-seed/time captures; per-stage gameplay pass and defect log; live Pages and hosted-build check; `v0-baseline` tag (push failed; create it from commit `5b6556e` or retry).

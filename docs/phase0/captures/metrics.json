@@ -1,0 +1,67 @@
+{
+ "load_s": 4.64,
+ "china": {
+  "dots": 10,
+  "frames": 4,
+  "fps": 0.71,
+  "drawCallsPerFrame": 1578,
+  "country": "\ud83c\udde8\ud83c\uddf3 China"
+ },
+ "japan": {
+  "dots": 10,
+  "frames": 4,
+  "fps": 0.97,
+  "drawCallsPerFrame": 1574,
+  "country": "\ud83c\uddef\ud83c\uddf5 Japan"
+ },
+ "india": {
+  "dots": 10,
+  "frames": 6,
+  "fps": 1.21,
+  "drawCallsPerFrame": 1256,
+  "country": "\ud83c\uddee\ud83c\uddf3 India"
+ },
+ "egypt": {
+  "dots": 10,
+  "frames": 4,
+  "fps": 0.98,
+  "drawCallsPerFrame": 1623,
+  "country": "\ud83c\uddea\ud83c\uddec Egypt"
+ },
+ "italy": {
+  "dots": 10,
+  "frames": 4,
+  "fps": 0.78,
+  "drawCallsPerFrame": 1806,
+  "country": "\ud83c\uddee\ud83c\uddf9 Italy"
+ },
+ "france": {
+  "dots": 10,
+  "frames": 4,
+  "fps": 0.89,
+  "drawCallsPerFrame": 1821,
+  "country": "\ud83c\uddeb\ud83c\uddf7 France"
+ },
+ "mongolia": {
+  "dots": 10,
+  "frames": 4,
+  "fps": 0.72,
+  "drawCallsPerFrame": 3237,
+  "country": "\ud83c\uddf2\ud83c\uddf3 Mongolia"
+ },
+ "korea": {
+  "dots": 10,
+  "frames": 4,
+  "fps": 0.93,
+  "drawCallsPerFrame": 1258,
+  "country": "\ud83c\uddf0\ud83c\uddf7 South Korea"
+ },
+ "taiwan": {
+  "dots": 10,
+  "frames": 4,
+  "fps": 0.95,
+  "drawCallsPerFrame": 3636,
+  "country": "\ud83c\uddf9\ud83c\uddfc Taiwan"
+ },
+ "errors": []
+}
