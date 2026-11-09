@@ -140,12 +140,13 @@ function createStage(E) {
         put(11.95, sg * 2.3 + 0.38, G + 1.2, G + 1.4, 0.12, 0.1, 0x222222); put(11.95, sg * 2.3 - 0.38, G + 1.2, G + 1.4, 0.12, 0.1, 0x222222);
       }
     }
-    // the serpent of light: shadow triangles down the east balustrade of the +z stairway (afternoon only)
+    // the serpent of light: zig-zag shadow triangles down the east balustrade of the +z stairway (afternoon only), head at the foot
     for (let i = 0; i < 12; i++) {
-      const a = 10.4 - i * 0.55, y = rampY(a - 0.2) + 0.9, w = 0.5 + 0.28 * (i % 2);
-      const m = lamp(2.3 + 0.52, y - 0.2, CZ + a, 0.06, w, 0.52, 0x1a1a1a, 0x1a1a1a, { alpha: 0 });
+      const a = 10.5 - i * 0.55, y = rampY(a - 0.2) + 0.5, hh = 0.55 + 0.5 * (i % 2);
+      const m = lamp(2.3 + 0.5, y - (i % 2 ? 0 : 0.2), CZ + a, 0.08, hh, 0.55, 0x1a1a1a, 0x1a1a1a, { alpha: 0 });
       U.serpent.push({ m, k: i });
     }
+    U.serpent.push({ m: lamp(2.3 + 0.5, G + 0.7, CZ + 11.4, 0.1, 0.9, 1.0, 0x1a1a1a, 0x1a1a1a, { alpha: 0 }), k: 12 });
     // temple on top: walls, doorways (glow at night), frieze, cornice, crest
     {
       const y0 = TOP, ts = 5.4;
@@ -296,7 +297,7 @@ function createStage(E) {
       for (const w of b.wings) w.p.rotation.x = w.s * Math.sin(time * (reduced ? 3 : 9) + b.ph) * 0.7;
     }
     const prog = smooth(0.46, 0.62, phase) * (1 - smooth(0.66, 0.72, phase));
-    for (const s of u.serpent || []) { s.m.material.opacity = clamp(prog * 12 - (11 - s.k), 0, 1) * 0.55 * (1 - smooth(0.66, 0.72, phase)); s.m.visible = s.m.material.opacity > 0.01; }
+    for (const s of u.serpent || []) { s.m.material.opacity = clamp(prog * 12 - (11 - s.k), 0, 1) * 0.85 * (1 - smooth(0.66, 0.72, phase)); s.m.visible = s.m.material.opacity > 0.01; }
     const nightF = phase >= 0.5 ? smooth(0.74, 0.84, phase) : 1 - smooth(0.2, 0.27, phase);
     for (const bm of u.beams || []) { bm.m.material.opacity = nightF * bm.alpha; bm.m.visible = nightF > 0.01; }
   }
