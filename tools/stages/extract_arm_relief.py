@@ -37,7 +37,27 @@ js = "/*ARMDATA*/const ARM = {X0:%g,DX:%g,YT:%g,DY:%g,\n" % (X0, DX, YT, DY)
 for sd in (1, -1):
     _, t, r = out[sd]
     js += " '%d': {t:[%s],\n r:[%s]},\n" % (sd, ','.join("'%s'" % x for x in t), ','.join("'%s'" % x for x in r))
-js += "};/*ENDARMDATA*/"
+js += "};\n"
+# ---- body: shoulders down to the base, X from -2.5 to 2.5 (+X = viewer-left, as in the game), one grid
+BX0, BX1 = -2.5, 2.5; nxb = int(round((BX1 - BX0) / DX)) + 1; YTB = 13.3; PTOP = 90.0
+nyb = int(round((YTB - 0.12) / DY)) + 1
+tone = np.full((nyb, nxb), -1.0); rel = np.zeros((nyb, nxb))
+for j in range(nyb):
+    y = YTB - j * DY; py = PTOP + (YTB - y) * SC
+    for i in range(nxb):
+        X = BX0 + i * DX; px = CX - X * SC
+        if ndi.map_coordinates(mask.astype(float), [[py], [px]], order=1)[0] > 0.5:
+            tone[j, i] = ndi.map_coordinates(L, [[py], [px]], order=1)[0]; rel[j, i] = ndi.map_coordinates(Ld, [[py], [px]], order=1)[0]
+m = tone >= 0
+lab, nlab = ndi.label(m); sizes = ndi.sum(m, lab, range(1, nlab + 1)); m = lab == (1 + int(np.argmax(sizes)))   # keep the main body only
+lo, hi = np.percentile(tone[m], 3), np.percentile(tone[m], 97); sdv = rel[m].std() + 1e-6
+tr, rr = [], []
+for j in range(nyb):
+    tr.append(''.join('.' if not m[j, i] else chr(97 + int(np.clip((tone[j, i] - lo) / (hi - lo), 0, 0.999) * 26)) for i in range(nxb)))
+    rr.append(''.join('.' if not m[j, i] else chr(97 + int(np.clip(13 + 12 * rel[j, i] / (2 * sdv), 0, 25))) for i in range(nxb)))
+while tr and set(tr[-1]) == {'.'}: tr.pop(); rr.pop()
+js += "const BODY = {X0:%g,DX:%g,YT:%g,DY:%g,\n t:[%s],\n r:[%s]};/*ENDARMDATA*/" % (BX0, DX, YTB, DY, ','.join("'%s'" % x for x in tr), ','.join("'%s'" % x for x in rr))
+print('body rows', len(tr), 'cols', nxb)
 s = open(sys.argv[2]).read()
 if '/*ARMDATA*/' in s:
     a = s.index('/*ARMDATA*/'); b = s.index('/*ENDARMDATA*/') + len('/*ENDARMDATA*/'); s = s[:a] + js + s[b:]
