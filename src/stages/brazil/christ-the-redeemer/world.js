@@ -13,8 +13,9 @@ function createStage(E) {
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const smooth = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
   const HS = 10;                          // terrace height
-  const PLAT = 7.2;                       // terrace radius
-  const Y0 = HS + 4.7;                    // top of the pedestal
+  const PLAT = 8.2;                       // terrace radius
+  const SK = 1.2;                         // statue scale (statue-space units are ~1 m, 16 tall)
+  const Y0 = HS + 5.3;                    // top of the pedestal
   const SUGAR = [12, -19];                // Sugarloaf summit
   const FALL = [11.3, -8.2];              // granite outcrop with the waterfall
   const P = (deg, r) => [r * Math.cos(deg * Math.PI / 180), r * Math.sin(deg * Math.PI / 180)];
@@ -85,7 +86,7 @@ function createStage(E) {
 
   // differences, one every ~36 degrees around the statue
   const D = {
-    macaw: [0, Y0 + 13.5, 7.2],
+    macaw: [0, Y0 + 13.3 * SK, 7.0 * SK],
     city: [...P(36, 23)],
     stall: [3.4, 10.5],
     palms: [-4.6, 14.3],
@@ -189,62 +190,108 @@ function createStage(E) {
     for (let i = 0; i < TRACK.length - 1; i++) path(TRACK[i][0], TRACK[i][1], TRACK[i + 1][0], TRACK[i + 1][1], 1.5);
     g(8.0, height(8.2, 0.3) + 0.5, 0.3, 0.3, 1.0, 1.4, 0xb02a22); // buffer stop
 
-    // ---------- chapel, pedestal and the statue (main volumes are lamps so they glow at night) ----------
-    g(0, HS + 0.7, 0, 6.4, 1.4, 6.4, 0xb8b2a4);                       // chapel block
-    g(0, HS + 1.42, 0, 6.7, 0.16, 6.7, 0xa39d8f);
-    g(3.22, HS + 0.65, 0, 0.1, 1.1, 1.0, 0x2a2d33); g(3.24, HS + 1.25, 0, 0.1, 0.35, 0.7, 0x2a2d33); // arched door
-    g(0, HS + 3.0, 0, 4.2, 3.0, 4.2, 0x2c2f35);                        // black granite pedestal
-    g(0, HS + 4.55, 0, 4.7, 0.3, 4.7, 0x3a3e45);
-    g(2.14, HS + 3.0, 0, 0.08, 1.1, 1.8, 0x474c55);                    // inscription slab
-    // statue is modelled with arms along local x and the face toward +z; it is turned 90 degrees so the
-    // arms span the default view. S = glowing lamp volume, G = static detail (shaded, dark at night).
-    const S = (x, y, z, sx, sy, sz, day, night) => lamp(z, Y0 + y, x, sz, sy, sx, day, night);
-    const G = (x, y, z, sx, sy, sz, c) => g(z, Y0 + y, x, sz, sy, sx, c);
-    const ROBE = 0xd0d6cb, ROBE_N = 0xfff1cf, SHADE = 0x929a8e, DRAPE = 0xaab1a5, DRAPE_N = 0xf0d9a6;
-    S(0, 1.9, 0, 2.9, 3.8, 1.9, ROBE, ROBE_N);                         // hem
-    S(0, 5.6, 0, 2.5, 3.6, 1.7, 0xd3d9ce, ROBE_N);                     // long robe
-    S(0, 8.6, 0, 2.4, 2.4, 1.6, 0xd6dbd0, ROBE_N);                     // waist
-    S(0, 11.0, 0, 2.9, 2.8, 1.7, 0xd9ded3, 0xfff4d8);                  // chest
-    S(0, 12.9, 0, 3.3, 1.0, 1.4, 0xc6ccc1, 0xfff1cf);                  // shoulders
-    for (const s of [-1, 1]) {
-      S(s * 4.5, 12.9, 0, 6.2, 0.9, 1.0, 0xc9cfc4, 0xfff1cf);          // arms
-      S(s * 7.0, 12.7, 0, 1.6, 0.8, 0.9, 0xcbd1c6, 0xfff1cf);          // forearms (slight droop)
-      S(s * 8.1, 12.55, 0, 1.0, 0.55, 0.75, 0xdde0d6, 0xfff4d8);       // hands
-      for (let f = 0; f < 4; f++) G(s * 8.85, 12.58, -0.28 + f * 0.19, 0.55, 0.12, 0.14, 0xd3d7cc); // fingers
-      for (let i = 0; i < 8; i++) {                                      // sleeve drape hanging from the arm
-        const h = 3.7 - i * 0.4;
-        S(s * (1.9 + i * 0.75), 12.4 - h / 2, 0, 0.78, h, 0.9, DRAPE, DRAPE_N);
+    // ---------- chapel, pedestal and the statue ----------
+    g(0, HS + 0.7, 0, 8.6, 1.4, 8.6, 0xb8b2a4);                        // chapel block
+    g(0, HS + 1.42, 0, 8.9, 0.16, 8.9, 0xa39d8f);
+    g(4.32, HS + 0.65, 0, 0.1, 1.1, 1.2, 0x2a2d33); g(4.34, HS + 1.25, 0, 0.1, 0.35, 0.9, 0x2a2d33); // arched door
+    g(0, HS + 3.3, 0, 7.4, 3.6, 7.4, 0x2c2f35);                        // dark granite pedestal
+    g(0, HS + 5.15, 0, 7.8, 0.3, 7.8, 0x3a3e45);                       // cornice
+    g(3.72, HS + 3.3, 0, 0.08, 1.2, 2.2, 0x474c55);                    // inscription slab
+    // Statue: arms along local x, face toward +z; turned 90 degrees so the arms span the default view.
+    // S = glowing base volume (cream floodlit at night); G = static carved relief on top of it (stays dark
+    // at night, so folds read as carved grooves day and night). SK scales everything.
+    const S = (x, y, z, sx, sy, sz, day, night) => lamp(z * SK, Y0 + y * SK, x * SK, sz * SK, sy * SK, sx * SK, day, night);
+    const G = (x, y, z, sx, sy, sz, c) => g(z * SK, Y0 + y * SK, x * SK, sz * SK, sy * SK, sx * SK, c);
+    const BASE = 0xaab2a4, STONE_N = 0xfff1cf, RIDGE = 0xd7dccf, LIGHT = 0xe3e7dc, GROOVE = 0x7b8378, SHADOW = 0x656d66, DRAPE = 0xa5ad9f, HAIR = 0x9aa294, HAIR_N = 0xf0d699;
+
+    // ---- long pleated skirt (deep vertical pleats all round) and tunic, in tiers that flare toward the hem ----
+    const TIERS = [];
+    for (let j = 0; j < 8; j++) { const lo = j * 0.7, mid = lo + 0.35; TIERS.push([lo, lo + 0.7, 2.15 - (2.15 - 1.55) * (mid / 5.6), 1.2 - 0.32 * (mid / 5.6)]); }
+    TIERS.push([5.6, 8.0, 1.45, 0.85], [8.0, 10.4, 1.5, 0.85], [10.4, 12.4, 1.75, 0.88]);
+    for (const [lo, hi, half, dh] of TIERS) {
+      S(0, (lo + hi) / 2, 0, half * 2, hi - lo, dh * 2, BASE, STONE_N);
+      if (hi <= 5.6) {                                                     // pleat ridges front and back
+        const n = Math.round(half / 0.2);
+        for (let k = -n; k <= n; k++) for (const zz of [dh + 0.03, -dh - 0.03]) G(k / n * half * 0.95, (lo + hi) / 2, zz, 0.21, hi - lo - 0.04, 0.07, k % 2 ? RIDGE : LIGHT);
+        for (const sx of [half + 0.03, -half - 0.03]) for (let k = -3; k <= 3; k++) G(sx, (lo + hi) / 2, k * dh / 3.4, 0.07, hi - lo - 0.04, 0.2, k % 2 ? RIDGE : LIGHT); // side pleats
+      } else {                                                             // tunic: long back folds
+        for (let k = -3; k <= 3; k++) G(k * half / 3.4, (lo + hi) / 2, -dh - 0.03, 0.26, hi - lo - 0.04, 0.07, k % 2 ? RIDGE : GROOVE);
       }
-      for (let i = 0; i < 6; i++) G(s * (2.2 + i * 0.9), 12.45 - (3.7 - i * 0.55) - 0.05, 0.5, 0.1, 0.1, 0.06, SHADE); // drape edge folds
     }
-    S(0, 13.85, 0, 0.9, 0.6, 0.9, 0xd2d7cc, ROBE_N);                   // neck
-    S(0, 14.95, 0, 1.3, 1.6, 1.3, 0xdaded4, 0xfff6e0);                 // head
-    S(0, 15.05, -0.55, 1.5, 1.9, 0.6, 0xb4bbaf, 0xf6e2b4);             // hair
-    for (const s of [-1, 1]) S(s * 0.72, 14.55, -0.05, 0.3, 1.7, 1.1, 0xb4bbaf, 0xf6e2b4); // hair falling at the sides
-    S(0, 14.1, 0.6, 0.75, 0.7, 0.3, 0xc4cabe, 0xf2dca6);               // beard
-    G(0, 14.85, 0.7, 0.22, 0.45, 0.22, 0xc3c9bd);                      // nose
-    for (const s of [-1, 1]) G(s * 0.32, 15.15, 0.66, 0.22, 0.13, 0.06, 0x555a55); // eyes
-    G(0, 14.45, 0.68, 0.45, 0.08, 0.06, 0x7d837b);                     // mouth
-    // robe folds (front and back), V neck, waist fold, feet
-    for (const zz of [0.93, -0.93]) {
-      for (let k = -3; k <= 3; k++) G(k * 0.38, 4.9, zz, 0.1, 9.6, 0.06, k % 2 ? 0xb4bbaf : SHADE);
-      G(0, 8.0, zz, 2.2, 0.14, 0.06, SHADE);
+    G(0, 0.1, 0, 4.5, 0.22, 2.6, 0xb7beb0);                                // hem band
+    for (const s of [-1, 1]) G(s * 0.7, 0.12, 1.3, 0.8, 0.24, 0.5, 0xb2b9ab); // feet
+
+    // ---- mantle: diagonal drape across the chest, long hanging fold, V neckline ----
+    for (let t = 0; t < 9; t++) {
+      const cx = -1.55 + t * 0.4, cy = 12.1 - t * 0.62;
+      G(cx, cy, 0.9, 0.62, 0.52, 0.12, LIGHT);
+      G(cx + 0.18, cy - 0.34, 0.9, 0.62, 0.1, 0.06, SHADOW);
+      G(cx - 0.05, cy - 0.7, 0.89, 0.5, 0.1, 0.05, GROOVE);                // second parallel fold
     }
-    G(0, 11.9, 0.88, 0.8, 1.2, 0.05, SHADE); G(0, 11.4, 0.88, 0.4, 0.8, 0.05, 0x7f867b); // V neckline
-    for (const s of [-1, 1]) G(s * 0.55, 0.12, 1.05, 0.7, 0.25, 0.7, 0xb9bfb3); // feet
+    G(1.45, 8.6, 0.93, 0.85, 7.4, 0.1, LIGHT);                             // long hanging fold
+    for (const dx of [-0.28, 0, 0.28]) G(1.45 + dx, 8.6, 0.99, 0.07, 7.2, 0.05, GROOVE);
+    G(1.9, 8.6, 0.9, 0.1, 7.2, 0.08, SHADOW);
+    for (const s of [-1, 1]) for (let t = 0; t < 4; t++) G(s * (0.5 - t * 0.1), 12.9 - t * 0.5, 0.92, 0.24, 0.5, 0.07, SHADOW); // V neckline
+    G(0, 8.0, 0.9, 2.6, 0.1, 0.06, SHADOW);                                // waist fold
+    for (const k of [-1.1, -0.45, 0.2, 0.85]) G(k, 9.4, 0.9, 0.08, 1.6, 0.05, GROOVE); // chest creases
+    S(0, 12.0, -0.8, 3.4, 2.4, 0.5, DRAPE, STONE_N);                       // cloak behind the shoulders
+    for (let k = -4; k <= 4; k++) G(k * 0.4, 12.0, -1.07, 0.1, 2.3, 0.05, k % 2 ? SHADOW : GROOVE);
+
+    // ---- shoulders, arms, sleeves with fold lines, hands ----
+    S(0, 12.95, 0, 3.8, 1.0, 1.5, BASE, STONE_N);
+    for (const s of [-1, 1]) {
+      S(s * 4.5, 12.95, 0, 5.4, 0.8, 1.0, 0xb3baaa, STONE_N);               // upper arm
+      S(s * 6.85, 12.85, 0, 1.4, 0.7, 0.75, 0xb3baaa, STONE_N);            // forearm
+      S(s * 7.55, 12.8, 0, 0.7, 0.5, 0.8, 0xc7cdbe, STONE_N);              // palm
+      for (let f = 0; f < 4; f++) G(s * 8.05, 12.83, -0.3 + f * 0.2, 0.5, 0.1, 0.15, 0xc3c9ba);  // fingers
+      G(s * 7.7, 12.76, 0.48, 0.4, 0.1, 0.2, 0xc3c9ba);                    // thumb
+      for (let i = 0; i < 13; i++) {                                         // hanging sleeve as columns
+        const u = i / 12, x = 1.85 + u * 5.2, w = 0.47;
+        const hang = 0.5 + 3.5 * Math.pow(1 - u, 0.85) + (i % 2 ? -0.18 : 0.12);
+        const dz = 0.38 + 0.4 * (1 - u);
+        S(s * x, 12.5 - hang / 2, 0, w, hang, dz * 2, DRAPE, DRAPE === 0 ? 0 : 0xf0d9a6);
+        for (const zz of [dz + 0.03, -dz - 0.03]) G(s * x, 12.5 - hang / 2, zz, 0.07, hang - 0.12, 0.05, i % 2 ? GROOVE : SHADOW); // fold line
+        G(s * x, 12.5 - hang, 0, w + 0.04, 0.09, dz * 2 + 0.1, LIGHT);   // scalloped lower edge
+      }
+      G(s * 1.9, 11.9, 0.62, 0.1, 1.4, 0.05, SHADOW);
+    }
+
+    // ---- head: hair falling to the shoulders, long nose, heavy lids, moustache and pointed beard ----
+    S(0, 13.8, 0, 0.95, 0.7, 0.95, 0xb5bcae, STONE_N);                     // neck
+    G(0, 13.5, 0.5, 0.9, 0.12, 0.06, SHADOW);                              // under-chin shadow / collar
+    S(0, 15.0, 0, 1.3, 1.6, 1.15, 0xc3cabc, 0xfff6e0);                     // head
+    S(0, 15.55, -0.1, 1.55, 1.1, 1.4, HAIR, HAIR_N);                       // crown of hair
+    S(0, 14.7, -0.62, 1.55, 2.4, 0.5, HAIR, HAIR_N);                       // hair behind
+    for (const s of [-1, 1]) {
+      S(s * 0.78, 14.4, -0.05, 0.36, 2.9, 1.2, HAIR, HAIR_N);              // locks at the sides, down to the shoulders
+      for (const dx of [-0.1, 0.1]) G(s * 0.78 + dx, 14.4, 0.57, 0.05, 2.8, 0.04, GROOVE);
+      for (const dy of [0, 0.4, -0.4]) G(s * 0.97, 14.4 + dy, -0.05, 0.05, 2.6, 0.5, GROOVE);
+    }
+    for (let k = -3; k <= 3; k++) G(k * 0.2, 15.5, -0.6, 0.05, 1.8, 0.05, GROOVE); // strands down the back
+    G(0, 16.05, 0.2, 0.06, 0.1, 0.9, SHADOW);                              // centre parting
+    G(0, 15.45, 0.63, 1.1, 0.1, 0.1, GROOVE);                              // brow
+    for (const s of [-1, 1]) {
+      G(s * 0.3, 15.2, 0.62, 0.3, 0.14, 0.08, 0x4a504a);                   // eye / heavy lid
+      G(s * 0.3, 15.33, 0.64, 0.34, 0.05, 0.06, SHADOW);
+    }
+    G(0, 14.85, 0.72, 0.2, 0.85, 0.24, 0xd0d6c8);                          // long nose
+    G(0, 14.45, 0.66, 0.8, 0.14, 0.12, 0xa3ab9e);                          // moustache
+    G(0, 14.32, 0.64, 0.4, 0.06, 0.06, SHADOW);                            // mouth
+    S(0, 13.95, 0.58, 0.8, 0.6, 0.3, 0xb7beb0, 0xf2dca6);                  // beard
+    G(0, 13.62, 0.66, 0.4, 0.3, 0.2, 0xb3baa9);                            // pointed beard tip
 
     // floodlights and beams at the foot of the pedestal
-    for (const [sx, sz] of [[4.6, 4.6], [-4.6, 4.6], [4.6, -4.6], [-4.6, -4.6]]) {
+    for (const [sx, sz] of [[5.4, 5.4], [-5.4, 5.4], [5.4, -5.4], [-5.4, -5.4]]) {
       g(sx, HS + 0.2, sz, 0.7, 0.4, 0.7, 0x2a2d33);
       lamp(sx, HS + 0.55, sz, 0.45, 0.2, 0.45, 0xe9e6dc, 0xfff4c0);
-      U.beams.push({ m: lamp(sx * 0.9, HS + 9, sz * 0.9, 0.7, 17, 0.7, 0xfff4c0, 0xfff4c0, { alpha: 0 }), alpha: 0.4 });
+      U.beams.push({ m: lamp(sx * 0.9, HS + 11, sz * 0.9, 0.8, 21, 0.8, 0xfff4c0, 0xfff4c0, { alpha: 0 }), alpha: 0.4 });
     }
     // slow sweeping searchlights
     const lights = motion(o(0, 0, 0)); U.search = lights;
     for (let k = 0; k < 3; k++) {
       const a = k / 3 * Math.PI * 2;
-      const piv = motion(o(Math.cos(a) * 5.6, HS + 0.6, Math.sin(a) * 5.6)); piv.rotation.y = -a; lights.add(piv);
-      const t = 0.5, L = 32, m = lamp(Math.sin(t) * L / 2, Math.cos(t) * L / 2, 0, 0.9, L, 0.9, 0xd8f3ff, [0xbfe9ff, 0xffd9a8, 0xe3c8ff][k], { alpha: 0, parent: piv });
+      const piv = motion(o(Math.cos(a) * 6.4, HS + 0.6, Math.sin(a) * 6.4)); piv.rotation.y = -a; lights.add(piv);
+      const t = 0.5, L = 38, m = lamp(Math.sin(t) * L / 2, Math.cos(t) * L / 2, 0, 0.9, L, 0.9, 0xd8f3ff, [0xbfe9ff, 0xffd9a8, 0xe3c8ff][k], { alpha: 0, parent: piv });
       m.rotation.z = -t; U.beams.push({ m, alpha: 0.34 });
     }
 
@@ -268,10 +315,10 @@ function createStage(E) {
     for (let k = 0; k < 3; k++) g(14.4, height(14.4, 4 + k * 3.2) + 0.15, 4 + k * 3.2, 0.2, 0.3, 1.6, 0x4a4d54); // main street dashes
 
     // ---------- tourists, mist, helicopter, macaws, train ----------
-    walker(-5.4, 5.2, 5.4, 5.2, 0xd9a441, 1);
-    walker(5.4, -5.4, -5.4, -5.4, 0x2f6f8f, 2);
-    walker(5.6, -4.2, 5.6, 4.2, 0xc0392b, 3);
-    walker(-5.6, 4.2, -5.6, -4.2, 0x2e9b4a, 4);
+    walker(-6.4, 6.2, 6.4, 6.2, 0xd9a441, 1);
+    walker(6.4, -6.4, -6.4, -6.4, 0x2f6f8f, 2);
+    walker(6.6, -5.0, 6.6, 5.0, 0xc0392b, 3);
+    walker(-6.6, 5.0, -6.6, -5.0, 0x2e9b4a, 4);
 
     for (let i = 0; i < 5; i++) {
       const cloud = motion(o(0, 0, 0));
@@ -294,7 +341,7 @@ function createStage(E) {
       g(0, 0, 0, 0.9, 0.35, 0.4, k ? 0xe8c030 : 0xd8362b, bird); g(0.55, 0.12, 0, 0.35, 0.32, 0.32, k ? 0xe8c030 : 0xd8362b, bird);
       g(-0.8, -0.05, 0, 0.9, 0.1, 0.14, 0x2a8fd0, bird); g(0.8, 0.1, 0, 0.18, 0.14, 0.14, 0xf2d9a0, bird);
       const wings = [-1, 1].map((s) => { const p = motion(o(0, 0.1, s * 0.2)); bird.add(p); g(0, 0.05, s * 0.55, 0.45, 0.07, 1.1, 0x2358c9, p); g(0.2, 0.06, s * 0.55, 0.15, 0.08, 1.0, 0xe8c030, p); return { p, s }; });
-      U.macaws.push({ g: bird, wings, r: 13 + k * 3, w: (k ? -1 : 1) * (0.3 + 0.05 * k), y: 24 + k * 2.8, ph: k * 2.1 });
+      U.macaws.push({ g: bird, wings, r: 13 + k * 3, w: (k ? -1 : 1) * (0.3 + 0.05 * k), y: 29 + k * 2.8, ph: k * 2.1 });
     }
 
     const train = motion(o(0, 0, 0)); U.train = train;
@@ -445,7 +492,7 @@ function createStage(E) {
     }
     if (u.heli) {
       const a = time * 0.16, h = u.heli.g;
-      h.position.set(Math.cos(a) * 27, 38 + Math.sin(time * 0.6) * 0.5, Math.sin(a) * 27);
+      h.position.set(Math.cos(a) * 27, 44 + Math.sin(time * 0.6) * 0.5, Math.sin(a) * 27);
       h.rotation.y = Math.atan2(-Math.cos(a), -Math.sin(a));
       u.heli.rotor.rotation.y = time * (reduced ? 4 : 22);
       u.heli.nav.scale.setScalar(0.2 * (0.6 + 0.8 * (Math.sin(time * 5) > 0 ? 1 : 0)));
