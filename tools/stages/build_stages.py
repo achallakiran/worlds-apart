@@ -167,5 +167,13 @@ if thumbs:
     table = "{" + ",".join("%d:%s" % (k, json.dumps(v)) for k, v in thumbs.items()) + "}"
     s = s.replace(anchor, "var __STAGE_THUMBS=%s;function Bh(t){if(__STAGE_THUMBS[t])return __STAGE_THUMBS[t];" % table)
 
+# ---------- hidden legacy stages (kept in the legacy bundle, removed from the stage picker and country list) ----------
+HIDDEN = {"japan-pagoda-garden": "japan"}
+for sid, cid in HIDDEN.items():
+    s, n1 = re.subn(r',?\{id:"%s",countryId:"%s",name:"[^"]*",builder:\d+,opening:\{landscape:\{[^}]*\},portrait:\{[^}]*\}\}\}' % (sid, cid), "", s)
+    s, n2 = re.subn(r',?\{id:"%s",name:"[^"]*",music:\d+,flag:"[^"]*",threshold:\d+\}' % cid, "", s)
+    if n1 != 1 or n2 != 1:
+        fail(f"could not hide {sid}: scenery {n1}, country {n2}")
+
 open(out, "w", encoding="utf-8").write(s)
 print(f"built {out}: {len(packages)} stage package(s): {', '.join(ids)}; {len(s)} bytes")
