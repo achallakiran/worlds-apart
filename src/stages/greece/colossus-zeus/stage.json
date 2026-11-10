@@ -1,0 +1,61 @@
+{
+  "id": "greece-colossus-zeus",
+  "name": "Colossus of Rhodes & Statue of Zeus",
+  "builder": 19,
+  "profile": 19,
+  "order": 190,
+  "baseSky": "0x8fcdf0",
+  "pandaPosition": [
+    -3,
+    10
+  ],
+  "lamps": {
+    "from": [
+      -20,
+      1.0,
+      23.6
+    ],
+    "step": [
+      2.6,
+      0,
+      0
+    ]
+  },
+  "starCount": 90,
+  "roundMoon": true,
+  "atmosphere": {
+    "waterSpots": [],
+    "cloudCount": 5,
+    "cloudAltitude": 30,
+    "birdAltitude": 30
+  },
+  "opening": {
+    "landscape": {
+      "yaw": 0.2,
+      "phi": 1.04,
+      "zoom": 0.75,
+      "tx": 0,
+      "tz": -2,
+      "ty": 13
+    },
+    "portrait": {
+      "yaw": 0.2,
+      "phi": 1.02,
+      "zoom": 0.78,
+      "tx": 0,
+      "tz": -2,
+      "ty": 15
+    }
+  },
+  "country": {
+    "id": "greece",
+    "name": "Greece",
+    "flag": "\\u{1F1EC}\\u{1F1F7}",
+    "threshold": 0
+  },
+  "music": "music.mp3",
+  "theme": "ancient-seven-wonders",
+  "thumbnail": {
+    "image": "thumb.jpg"
+  }
+}

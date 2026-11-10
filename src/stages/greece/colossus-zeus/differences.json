@@ -1,0 +1,76 @@
+[
+ {
+  "index": 0,
+  "title": "Olive tree beside the houses",
+  "kind": "presence",
+  "availability": "any",
+  "angle": 0
+ },
+ {
+  "index": 1,
+  "title": "Quay lantern colour",
+  "kind": "color",
+  "availability": "night",
+  "hintPhase": 0.86,
+  "angle": 36
+ },
+ {
+  "index": 2,
+  "title": "Ship at anchor in the bay",
+  "kind": "presence",
+  "availability": "any",
+  "angle": 72
+ },
+ {
+  "index": 3,
+  "title": "Market awning: red or blue",
+  "kind": "color",
+  "availability": "any",
+  "angle": 108
+ },
+ {
+  "index": 4,
+  "title": "Garden lamp colour",
+  "kind": "color",
+  "availability": "night",
+  "hintPhase": 0.86,
+  "angle": 144
+ },
+ {
+  "index": 5,
+  "title": "Goats by the wall: three or two",
+  "kind": "count",
+  "availability": "any",
+  "angle": 180
+ },
+ {
+  "index": 6,
+  "title": "Hillside beacon colour",
+  "kind": "color",
+  "availability": "night",
+  "hintPhase": 0.86,
+  "angle": 216
+ },
+ {
+  "index": 7,
+  "title": "Banner colour: red or blue",
+  "kind": "color",
+  "availability": "any",
+  "angle": 252
+ },
+ {
+  "index": 8,
+  "title": "Sacred flame colour",
+  "kind": "color",
+  "availability": "night",
+  "hintPhase": 0.86,
+  "angle": 288
+ },
+ {
+  "index": 9,
+  "title": "Cypress grove: three trees or two",
+  "kind": "count",
+  "availability": "any",
+  "angle": 324
+ }
+]
