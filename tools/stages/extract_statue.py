@@ -13,7 +13,7 @@ im = np.asarray(Image.open(photo).convert('RGB')).astype(float)
 R, G, B = im[..., 0], im[..., 1], im[..., 2]
 L = im.mean(2)
 if subject == 'zeus':
-    box = (90, 40, 400, 404); CELL = 2.0; HEIGHT = 9.6; DC = 8.0; ZC = 0.55; AMP = 0.30; name = 'ZEUS_G'
+    box = (90, 40, 400, 404); CELL = 1.6; HEIGHT = 9.6; DC = 8.0; ZC = 0.55; AMP = 0.30; name = 'ZEUS_G'
     gold = (R - B > 25); skin = (np.minimum(np.minimum(R, G), B) > 150) & (B - R < 8)
     m = gold | skin
     m[:35] = False; m[404:] = False; m[:, :90] = False; m[:, 400:] = False
@@ -23,7 +23,7 @@ if subject == 'zeus':
     lab, n = ndi.label(m); sz = ndi.sum(m, lab, range(1, n + 1)); m = np.isin(lab, [i + 1 for i, s in enumerate(sz) if s > 60])
     LIFT = 1.0
 else:
-    box = (50, 85, 300, 497); CELL = 1.6; HEIGHT = 30.0; DC = 11.0; ZC = 1.5; AMP = 0.45; name = 'COL_G'
+    box = (50, 85, 300, 497); CELL = 1.25; HEIGHT = 30.0; DC = 11.0; ZC = 1.5; AMP = 0.45; name = 'COL_G'
     raw = ndi.gaussian_filter(R - B, 1.0) > 20
     raw[487:] = False; raw[445:] &= (L[445:] < 118)                      # ground, quay and city at the feet are paler than the bronze
     raw[445:] &= (R[445:] >= G[445:]); raw[468:, :78] = False; raw[320:346, 148:178] = False                                       # pixelated patch between the legs in the render
@@ -34,6 +34,13 @@ else:
     m = m | np.isin(hl, [i + 1 for i, v in enumerate(hs) if v < 120])      # fill small holes only (sky between the legs stays open)
     lab, n = ndi.label(m); sz = ndi.sum(m, lab, range(1, n + 1)); m = lab == (1 + int(np.argmax(sz)))
     LIFT = 1.0
+m = ndi.gaussian_filter(m.astype(float), 1.4) > 0.5                  # smooth the silhouette (no stair-steps or hair-thin fringes)
+lab, n = ndi.label(m); sz = ndi.sum(m, lab, range(1, n + 1)); m = np.isin(lab, [i + 1 for i, v in enumerate(sz) if v > 40])
+# edge colours: anti-aliased photo edges bleed sky / backdrop into the statue, so repaint a 2 px rim from the nearest interior pixel
+me = ndi.binary_erosion(m, iterations=2)
+_, (iy, ix) = ndi.distance_transform_edt(~me, return_indices=True)
+for c in range(3): im[..., c] = im[..., c][iy, ix]
+R, G, B = im[..., 0], im[..., 1], im[..., 2]; L = im.mean(2)
 x0, y0, x1, y1 = box
 ys, xs = np.where(m[y0:y1, x0:x1]); ty, by = ys.min() + y0, ys.max() + y0; lx, rx = xs.min() + x0, xs.max() + x0
 cols = int(np.ceil((rx - lx + 1) / CELL)); rows = int(np.ceil((by - ty + 1) / CELL)); S = HEIGHT / rows
@@ -70,6 +77,7 @@ else:
     back = -(0.15 + 0.75 * infl)
 rr = np.clip(rel / (np.percentile(np.abs(rel[M]), 90) + 1e-6), -1, 1)
 front = front + AMP * rr * np.clip(D / 3.0, 0, 1)                     # carve folds / muscle / face from the shading (not at the very edge)
+front = ndi.gaussian_filter(front, 0.8); back = ndi.gaussian_filter(back, 0.8)
 front = np.maximum(front, back + 0.14)
 # ---- encode ----
 cells = col[M]
