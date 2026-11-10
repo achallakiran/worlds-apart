@@ -1,0 +1,12 @@
+[
+  {"index": 0, "title": "Obelisk cap colour: gold or turquoise", "kind": "color", "availability": "any", "angle": 0},
+  {"index": 1, "title": "Harbour lantern colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 39},
+  {"index": 2, "title": "Anchored ship in the harbour", "kind": "presence", "availability": "any", "angle": 74},
+  {"index": 3, "title": "Beach palm: present or absent", "kind": "presence", "availability": "any", "angle": 108},
+  {"index": 4, "title": "Corner tower fire colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 135},
+  {"index": 5, "title": "Fishermen on the rocks: three or two", "kind": "count", "availability": "any", "angle": 180},
+  {"index": 6, "title": "Rock lantern colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 222},
+  {"index": 7, "title": "Banner colour: red or blue", "kind": "color", "availability": "any", "angle": 256},
+  {"index": 8, "title": "Seaside brazier colour", "kind": "color", "availability": "night", "hintPhase": 0.86, "angle": 294},
+  {"index": 9, "title": "Pier arcade: three arches or two", "kind": "count", "availability": "any", "angle": 330}
+]

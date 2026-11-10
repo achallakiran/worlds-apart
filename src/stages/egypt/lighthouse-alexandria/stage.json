@@ -1,0 +1,55 @@
+{
+  "id": "egypt-lighthouse-alexandria",
+  "name": "Lighthouse of Alexandria",
+  "countryId": "egypt",
+  "builder": 17,
+  "profile": 3,
+  "order": 170,
+  "baseSky": "0x9ccbea",
+  "pandaPosition": [
+    11,
+    9.5
+  ],
+  "lamps": {
+    "from": [
+      15.6,
+      2.4,
+      1.2
+    ],
+    "step": [
+      1.4,
+      0,
+      0
+    ]
+  },
+  "starCount": 60,
+  "roundMoon": true,
+  "atmosphere": {
+    "waterSpots": [],
+    "cloudCount": 6,
+    "cloudAltitude": 34,
+    "birdAltitude": 30
+  },
+  "opening": {
+    "landscape": {
+      "yaw": 0.5,
+      "phi": 1.04,
+      "zoom": 1.0,
+      "tx": 0,
+      "tz": -3,
+      "ty": 12
+    },
+    "portrait": {
+      "yaw": 0.46,
+      "phi": 1.02,
+      "zoom": 0.95,
+      "tx": 0,
+      "tz": -3,
+      "ty": 13
+    }
+  },
+  "theme": "ancient-seven-wonders",
+  "thumbnail": {
+    "image": "thumb.jpg"
+  }
+}
