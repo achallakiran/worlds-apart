@@ -168,7 +168,7 @@ if thumbs:
     s = s.replace(anchor, "var __STAGE_THUMBS=%s;function Bh(t){if(__STAGE_THUMBS[t])return __STAGE_THUMBS[t];" % table)
 
 # ---------- hidden legacy stages (kept in the legacy bundle, removed from the stage picker and country list) ----------
-HIDDEN = {"japan-pagoda-garden": "japan"}
+HIDDEN = {"japan-pagoda-garden": "japan", "france-paris-afterglow": "france", "korea-gyeongbokgung-palace": "korea", "mongolia-steppe-monument": "mongolia", "taiwan-taipei-afterglow": "taiwan"}
 for sid, cid in HIDDEN.items():
     s, n1 = re.subn(r',?\{id:"%s",countryId:"%s",name:"[^"]*",builder:\d+,opening:\{landscape:\{[^}]*\},portrait:\{[^}]*\}\}\}' % (sid, cid), "", s)
     s, n2 = re.subn(r',?\{id:"%s",name:"[^"]*",music:\d+,flag:"[^"]*",threshold:\d+\}' % cid, "", s)
