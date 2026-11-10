@@ -1,0 +1,61 @@
+{
+  "id": "turkey-mausoleum-artemis",
+  "name": "Mausoleum & Temple of Artemis",
+  "builder": 18,
+  "profile": 18,
+  "order": 180,
+  "baseSky": "0x9ccbea",
+  "pandaPosition": [
+    11,
+    9.5
+  ],
+  "lamps": {
+    "from": [
+      -20,
+      1.0,
+      23.6
+    ],
+    "step": [
+      2.6,
+      0,
+      0
+    ]
+  },
+  "starCount": 90,
+  "roundMoon": true,
+  "atmosphere": {
+    "waterSpots": [],
+    "cloudCount": 5,
+    "cloudAltitude": 30,
+    "birdAltitude": 30
+  },
+  "opening": {
+    "landscape": {
+      "yaw": 0.5,
+      "phi": 1.04,
+      "zoom": 1.0,
+      "tx": 0,
+      "tz": -4,
+      "ty": 10
+    },
+    "portrait": {
+      "yaw": 0.46,
+      "phi": 1.02,
+      "zoom": 0.9,
+      "tx": 0,
+      "tz": -4,
+      "ty": 12
+    }
+  },
+  "country": {
+    "id": "turkey",
+    "name": "Turkey",
+    "flag": "\\u{1F1F9}\\u{1F1F7}",
+    "threshold": 0
+  },
+  "music": "music.mp3",
+  "theme": "ancient-seven-wonders",
+  "thumbnail": {
+    "image": "thumb.jpg"
+  }
+}
